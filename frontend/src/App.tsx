@@ -5,7 +5,8 @@ import { VoiceOutput } from './components/VoiceOutput';
 import { TurnTakingIndicator } from './components/TurnTakingIndicator';
 import { VoiceSettings } from './components/VoiceSettings';
 import { Orders } from './components/Orders';
-import type { TTSVoice, LanguageCode } from './components/VoiceSettings';
+import type { TTSVoice } from './components/VoiceSettings';
+import type { LanguageCode } from './constants/languages';
 import { useContinuousVoiceConversation } from './hooks/useContinuousVoiceConversation';
 import { useStreamingChat } from './hooks/useStreamingChat';
 

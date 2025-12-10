@@ -12,6 +12,7 @@ import { ProductContextManager } from "../utils/product-context.js";
 import { ProductListItem } from "../orchestrator/index.js";
 import { GuardrailsCallbackHandler, DEFAULT_CONFIG } from "../security/index.js";
 import { getDataPath } from "../utils/paths.js";
+import { LANGUAGE_NAMES } from "../constants/languages.js";
 
 const db = createDatabase();
 
@@ -312,16 +313,7 @@ export class OrderAgent {
       .map((msg) => `${msg.role}: ${msg.content}`)
       .join("\n");
 
-    const LANGUAGE_NAMES: Record<string, string> = {
-      en: 'English', es: 'Spanish', fr: 'French', de: 'German', it: 'Italian', pt: 'Portuguese',
-      ja: 'Japanese', ko: 'Korean', zh: 'Chinese', ar: 'Arabic', hi: 'Hindi', ru: 'Russian',
-      nl: 'Dutch', pl: 'Polish', tr: 'Turkish', sv: 'Swedish', da: 'Danish', no: 'Norwegian',
-      fi: 'Finnish', cs: 'Czech', ro: 'Romanian', hu: 'Hungarian', el: 'Greek', th: 'Thai',
-      vi: 'Vietnamese', id: 'Indonesian', uk: 'Ukrainian', he: 'Hebrew', bg: 'Bulgarian',
-      hr: 'Croatian', sk: 'Slovak', sl: 'Slovenian', et: 'Estonian', lv: 'Latvian', lt: 'Lithuanian',
-      mt: 'Maltese', ga: 'Irish', cy: 'Welsh',
-    };
-    const languageInstruction = language && LANGUAGE_NAMES[language]
+    const languageInstruction = language && LANGUAGE_NAMES[language as keyof typeof LANGUAGE_NAMES]
       ? `\n\nLANGUAGE SETTING: The user's language is set to ${LANGUAGE_NAMES[language]}. Respond ONLY in ${LANGUAGE_NAMES[language]}.`
       : '';
 

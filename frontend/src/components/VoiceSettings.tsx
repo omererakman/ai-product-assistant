@@ -1,54 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { LANGUAGE_OPTIONS, type LanguageCode } from '../constants/languages';
 import './VoiceSettings.css';
 
 export type TTSVoice = 'alloy' | 'echo' | 'fable' | 'onyx' | 'nova' | 'shimmer';
 
 // Also export as a const for runtime use
 export const TTS_VOICES: TTSVoice[] = ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'];
-
-export type LanguageCode = 'en' | 'es' | 'fr' | 'de' | 'it' | 'pt' | 'ja' | 'ko' | 'zh' | 'ar' | 'hi' | 'ru' | 'nl' | 'pl' | 'tr' | 'sv' | 'da' | 'no' | 'fi' | 'cs' | 'ro' | 'hu' | 'el' | 'th' | 'vi' | 'id' | 'uk' | 'he' | 'bg' | 'hr' | 'sk' | 'sl' | 'et' | 'lv' | 'lt' | 'mt' | 'ga' | 'cy';
-
-export const LANGUAGE_OPTIONS: Array<{ code: LanguageCode; name: string }> = [
-  { code: 'en', name: 'English' },
-  { code: 'es', name: 'Spanish' },
-  { code: 'fr', name: 'French' },
-  { code: 'de', name: 'German' },
-  { code: 'it', name: 'Italian' },
-  { code: 'pt', name: 'Portuguese' },
-  { code: 'ja', name: 'Japanese' },
-  { code: 'ko', name: 'Korean' },
-  { code: 'zh', name: 'Chinese' },
-  { code: 'ar', name: 'Arabic' },
-  { code: 'hi', name: 'Hindi' },
-  { code: 'ru', name: 'Russian' },
-  { code: 'nl', name: 'Dutch' },
-  { code: 'pl', name: 'Polish' },
-  { code: 'tr', name: 'Turkish' },
-  { code: 'sv', name: 'Swedish' },
-  { code: 'da', name: 'Danish' },
-  { code: 'no', name: 'Norwegian' },
-  { code: 'fi', name: 'Finnish' },
-  { code: 'cs', name: 'Czech' },
-  { code: 'ro', name: 'Romanian' },
-  { code: 'hu', name: 'Hungarian' },
-  { code: 'el', name: 'Greek' },
-  { code: 'th', name: 'Thai' },
-  { code: 'vi', name: 'Vietnamese' },
-  { code: 'id', name: 'Indonesian' },
-  { code: 'uk', name: 'Ukrainian' },
-  { code: 'he', name: 'Hebrew' },
-  { code: 'bg', name: 'Bulgarian' },
-  { code: 'hr', name: 'Croatian' },
-  { code: 'sk', name: 'Slovak' },
-  { code: 'sl', name: 'Slovenian' },
-  { code: 'et', name: 'Estonian' },
-  { code: 'lv', name: 'Latvian' },
-  { code: 'lt', name: 'Lithuanian' },
-  { code: 'mt', name: 'Maltese' },
-  { code: 'ga', name: 'Irish' },
-  { code: 'cy', name: 'Welsh' },
-];
 
 interface VoiceSettingsProps {
   useNaturalTTS: boolean;
