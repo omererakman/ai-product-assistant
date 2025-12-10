@@ -6,6 +6,7 @@ import { EnsembleRetriever } from "@langchain/classic/retrievers/ensemble";
 import { getConfig } from "../config/env.js";
 import { logger } from "../logger.js";
 import { loadProductsFromDirectory } from "../loaders/directory-loader.js";
+import { getDataPath } from "../utils/paths.js";
 
 export async function createHybridRetriever(vectorStore: VectorStore): Promise<BaseRetriever> {
   const config = getConfig();
@@ -17,7 +18,7 @@ export async function createHybridRetriever(vectorStore: VectorStore): Promise<B
     searchType: "similarity",
   });
 
-  const products = await loadProductsFromDirectory("data");
+  const products = await loadProductsFromDirectory(getDataPath());
   const bm25Docs = products.map((product) => {
     const searchableText = [
       product.name,

@@ -24,6 +24,7 @@ interface UseContinuousVoiceConversationOptions {
   useNaturalTTS?: boolean;
   ttsVoice?: 'alloy' | 'echo' | 'fable' | 'onyx' | 'nova' | 'shimmer';
   ttsRate?: number;
+  language?: string;
 }
 
 type ConversationState = 'idle' | 'listening' | 'processing' | 'speaking';
@@ -70,6 +71,7 @@ export function useContinuousVoiceConversation(options: UseContinuousVoiceConver
     useNaturalTTS: enableNaturalTTS = false,
     ttsVoice = 'alloy',
     ttsRate = 1.0,
+    language = 'en',
   } = options;
 
   const [isActive, setIsActive] = useState(false);
@@ -471,6 +473,7 @@ export function useContinuousVoiceConversation(options: UseContinuousVoiceConver
         body: JSON.stringify({
           message: transcript,
           sessionId,
+          language,
         }),
         signal: abortController.signal,
       });
@@ -570,6 +573,7 @@ export function useContinuousVoiceConversation(options: UseContinuousVoiceConver
   }, [sessionId, onMessage, onError, processStreamingText, transitionTo]);
 
   const { transcribe: transcribeAudio, isTranscribing } = useWhisperTranscription({
+    language,
     onTranscriptionComplete: async (transcript: string) => {
       if (!sessionActiveRef.current) return;
 

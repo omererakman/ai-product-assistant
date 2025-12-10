@@ -11,6 +11,7 @@ import { loadProductsFromDirectory } from "../loaders/directory-loader.js";
 import { ProductContextManager } from "../utils/product-context.js";
 import { ProductListItem } from "../orchestrator/index.js";
 import { GuardrailsCallbackHandler, DEFAULT_CONFIG } from "../security/index.js";
+import { getDataPath } from "../utils/paths.js";
 
 const db = createDatabase();
 
@@ -26,7 +27,7 @@ const searchProductsTool = new DynamicStructuredTool({
   func: async (input: { query: string }) => {
     const { query } = input;
     logger.debug({ query }, "Searching products");
-    const products = await loadProductsFromDirectory("data");
+    const products = await loadProductsFromDirectory(getDataPath());
     
     const lowerQuery = query.toLowerCase();
     const matchingProducts = products.filter(
@@ -292,6 +293,7 @@ export class OrderAgent {
   async invoke(
     question: string,
     chatHistory: Array<{ role: string; content: string }> = [],
+    language?: string,
   ): Promise<{
     response: string;
     toolCalls?: Array<{ name: string; args: unknown }>;
@@ -310,6 +312,19 @@ export class OrderAgent {
       .map((msg) => `${msg.role}: ${msg.content}`)
       .join("\n");
 
+    const LANGUAGE_NAMES: Record<string, string> = {
+      en: 'English', es: 'Spanish', fr: 'French', de: 'German', it: 'Italian', pt: 'Portuguese',
+      ja: 'Japanese', ko: 'Korean', zh: 'Chinese', ar: 'Arabic', hi: 'Hindi', ru: 'Russian',
+      nl: 'Dutch', pl: 'Polish', tr: 'Turkish', sv: 'Swedish', da: 'Danish', no: 'Norwegian',
+      fi: 'Finnish', cs: 'Czech', ro: 'Romanian', hu: 'Hungarian', el: 'Greek', th: 'Thai',
+      vi: 'Vietnamese', id: 'Indonesian', uk: 'Ukrainian', he: 'Hebrew', bg: 'Bulgarian',
+      hr: 'Croatian', sk: 'Slovak', sl: 'Slovenian', et: 'Estonian', lv: 'Latvian', lt: 'Lithuanian',
+      mt: 'Maltese', ga: 'Irish', cy: 'Welsh',
+    };
+    const languageInstruction = language && LANGUAGE_NAMES[language]
+      ? `\n\nLANGUAGE SETTING: The user's language is set to ${LANGUAGE_NAMES[language]}. Respond ONLY in ${LANGUAGE_NAMES[language]}.`
+      : '';
+
     const messages: Array<[string, string]> = [
       [
         "system",
@@ -321,7 +336,7 @@ You MUST respond in the EXACT same language that the user uses in their CURRENT 
 - If the user writes in Spanish, respond ONLY in Spanish
 - If the user writes in French, respond ONLY in French
 - The user's CURRENT question language takes ABSOLUTE priority - ignore conversation history language if it differs
-- DO NOT continue in a previous language if the user switches languages
+- DO NOT continue in a previous language if the user switches languages${languageInstruction}
 
 You are an order processing assistant. Your job is to:
 1. Search for products when users ask about them
@@ -507,7 +522,8 @@ If the user hasn't confirmed an order yet, just search for products and provide 
   async stream(
     question: string,
     chatHistory: Array<{ role: string; content: string }> = [],
-    onToken: (token: string) => void,
+    language?: string,
+    onToken?: (token: string) => void,
   ): Promise<{
     response: string;
     toolCalls?: Array<{ name: string; args: unknown }>;
@@ -520,7 +536,7 @@ If the user hasn't confirmed an order yet, just search for products and provide 
       "Streaming order request",
     );
 
-    const result = await this.invoke(question, chatHistory);
+    const result = await this.invoke(question, chatHistory, language);
     const words = result.response.split(/(\s+)/);
     for (const word of words) {
       onToken(word);

@@ -1,5 +1,17 @@
 .voice-settings {
   position: relative;
+  z-index: 2147483647;
+}
+
+.voice-settings-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 2147483646 !important;
+  backdrop-filter: blur(2px);
 }
 
 .voice-settings-toggle {
@@ -7,10 +19,11 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: rgba(99, 102, 241, 0.1);
-  border: 1px solid rgba(99, 102, 241, 0.2);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 8px;
-  color: #6366f1;
+  color: white;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
@@ -18,8 +31,10 @@
 }
 
 .voice-settings-toggle:hover {
-  background: rgba(99, 102, 241, 0.15);
-  border-color: rgba(99, 102, 241, 0.3);
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .voice-settings-toggle svg {
@@ -28,17 +43,23 @@
 }
 
 .voice-settings-panel {
-  position: absolute;
-  bottom: calc(100% + 0.5rem);
-  right: 0;
-  background: white;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  position: fixed;
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
   border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
   min-width: 320px;
   max-width: 400px;
-  z-index: 1000;
+  z-index: 2147483647 !important;
   animation: slideDown 0.2s ease-out;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  backdrop-filter: none !important;
+  margin-top: 0.5rem;
 }
 
 @keyframes slideDown {
@@ -52,12 +73,14 @@
   }
 }
 
+
 .voice-settings-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.25rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background: #ffffff !important;
 }
 
 .voice-settings-header h3 {
@@ -91,6 +114,7 @@
 
 .voice-settings-content {
   padding: 1.25rem;
+  background: #ffffff !important;
 }
 
 .setting-group {
@@ -129,7 +153,39 @@
   font-size: 0.8125rem;
   color: #6b7280;
   margin-top: 0.25rem;
-  margin-left: 1.75rem;
+  margin-left: 0;
+}
+
+.language-select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #1f2937;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236366f1' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 12px;
+  padding-right: 2.5rem;
+}
+
+.language-select:hover {
+  border-color: #6366f1;
+  background-color: rgba(99, 102, 241, 0.05);
+}
+
+.language-select:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
 .voice-options {

@@ -20,6 +20,7 @@ const ConfigSchema = z.object({
   databasePath: z.string().default("./data/orders.db"),
   chunkSize: z.number().int().positive().default(800),
   chunkOverlap: z.number().int().nonnegative().default(100),
+  minChunkSize: z.number().int().positive().default(50),
   retrieverType: z.enum(["similarity", "mmr", "hybrid"]).default("hybrid"),
   topK: z.number().int().positive().default(5),
   scoreThreshold: z.number().min(0).max(1).default(0.5),
@@ -60,6 +61,9 @@ export function getConfig(): Config {
       : undefined,
     chunkOverlap: process.env.CHUNK_OVERLAP
       ? parseInt(process.env.CHUNK_OVERLAP, 10)
+      : undefined,
+    minChunkSize: process.env.MIN_CHUNK_SIZE
+      ? parseInt(process.env.MIN_CHUNK_SIZE, 10)
       : undefined,
     retrieverType: process.env.RETRIEVER_TYPE,
     topK: process.env.TOP_K ? parseInt(process.env.TOP_K, 10) : undefined,

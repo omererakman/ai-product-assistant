@@ -78,6 +78,7 @@ export class Orchestrator {
 
   async processMessage(
     message: string,
+    language?: string,
     langfuseTrace?: any
   ): Promise<OrchestratorResponse> {
     const startTime = Date.now();
@@ -118,6 +119,7 @@ export class Orchestrator {
       const orderResponse = await this.orderAgent.invoke(
         message,
         this.chatHistory,
+        language,
       );
 
       orderAgentSpan?.end({
@@ -161,6 +163,7 @@ export class Orchestrator {
       const ragResponse = await this.ragAgent.invoke(
         message,
         this.chatHistory,
+        language,
       );
 
       ragAgentSpan?.end({
@@ -206,6 +209,7 @@ export class Orchestrator {
 
   async processMessageStream(
     message: string,
+    language: string | undefined,
     onToken: (chunk: { type: string; content?: string; [key: string]: unknown }) => void,
     langfuseTrace?: any
   ): Promise<OrchestratorResponse> {
@@ -238,6 +242,7 @@ export class Orchestrator {
       const orderResponse = await this.orderAgent.stream(
         message,
         this.chatHistory,
+        language,
         (token: string) => {
           onToken({ type: "token", content: token });
         }
@@ -292,6 +297,7 @@ export class Orchestrator {
       const ragResponse = await this.ragAgent.stream(
         message,
         this.chatHistory,
+        language,
         (token: string) => {
           onToken({ type: "token", content: token });
         }

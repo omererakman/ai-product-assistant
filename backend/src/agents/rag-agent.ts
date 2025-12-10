@@ -49,11 +49,15 @@ export class RAGAgent {
     if (!this.chain) {
       throw new Error("Failed to initialize RAG chain");
     }
+    if (!this.retriever) {
+      throw new Error("Failed to initialize retriever");
+    }
   }
 
   async invoke(
     question: string,
     chatHistory: Array<{ role: string; content: string }> = [],
+    language?: string,
   ): Promise<AgentResponse> {
     await this.ensureInitialized();
 
@@ -114,12 +118,22 @@ export class RAGAgent {
       chainInput.chat_history = formattedHistory;
     }
 
-    logger.info({ chainInput: { question: chainInput.question.substring(0, 100), hasHistory: !!chainInput.chat_history } }, "RAG Agent: Invoking chain");
-    
+    logger.info({ chainInput: { question: chainInput.question.substring(0, 100), hasHistory: !!chainInput.chat_history }, language }, "RAG Agent: Invoking chain");
+
     let result: AgentResponse;
     try {
       const chainStartTime = Date.now();
-      result = await this.chain.invoke(chainInput) as AgentResponse;
+      // If language is provided, recreate chain with language-aware prompt
+      let chainToUse = this.chain!;
+      if (language) {
+        const config = getConfig();
+        const llm = createOpenAILLM(config, {
+          streaming: false,
+          callbacks: [new GuardrailsCallbackHandler(DEFAULT_CONFIG)],
+        });
+        chainToUse = createRAGChain(this.retriever!, llm, this.name, true, language);
+      }
+      result = await chainToUse.invoke(chainInput) as AgentResponse;
       const chainDuration = Date.now() - chainStartTime;
 
       logger.info({ answerLength: result.answer?.length || 0, hasSources: !!result.sources, duration: chainDuration }, "RAG Agent: Chain invocation completed with LangChain guardrails");
@@ -133,8 +147,11 @@ export class RAGAgent {
   async stream(
     question: string,
     chatHistory: Array<{ role: string; content: string }> = [],
-    onToken: (token: string) => void,
+    language?: string,
+    onToken?: (token: string) => void,
   ): Promise<AgentResponse> {
+    await this.ensureInitialized();
+
     logger.debug(
       { agent: this.name, question: question.substring(0, 100), historyLength: chatHistory.length },
       "Streaming question",
@@ -174,14 +191,14 @@ export class RAGAgent {
     }
 
     const retrievalStartTime = Date.now();
-    const docs = await this.retriever.invoke(processedQuestion);
+    const docs = await this.retriever!.invoke(processedQuestion);
     const searchTimeMs = Date.now() - retrievalStartTime;
 
     const productList = ProductContextManager.extractFromDocuments(docs);
 
     if (docs.length === 0) {
       const answer = "I couldn't find any products matching your query. Could you try rephrasing your question?";
-      onToken(answer);
+      onToken?.(answer);
       return {
         answer,
         sources: [],
@@ -208,7 +225,7 @@ export class RAGAgent {
       });
     }
 
-    const prompt = createRAGPromptWithHistory();
+    const prompt = createRAGPromptWithHistory(language);
     const config = getConfig();
     const streamingLLM = createOpenAILLM(config, {
       streaming: true,
@@ -283,7 +300,7 @@ export class RAGAgent {
         
         if (delta) {
           fullAnswer += delta;
-          onToken(delta);
+          onToken?.(delta);
         }
       }
       

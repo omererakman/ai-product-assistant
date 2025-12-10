@@ -3,12 +3,13 @@ import { useState, useCallback } from 'react';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 interface UseWhisperTranscriptionOptions {
+  language?: string;
   onTranscriptionComplete?: (transcript: string) => void;
   onError?: (error: Error) => void;
 }
 
 export function useWhisperTranscription(options: UseWhisperTranscriptionOptions = {}) {
-  const { onTranscriptionComplete, onError } = options;
+  const { language = 'en', onTranscriptionComplete, onError } = options;
   
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -24,6 +25,7 @@ export function useWhisperTranscription(options: UseWhisperTranscriptionOptions 
                        audioBlob.type.includes('wav') ? 'wav' : 
                        audioBlob.type.includes('mp3') ? 'mp3' : 'webm';
       formData.append('audio', audioBlob, `audio.${extension}`);
+      formData.append('language', language);
 
       const response = await fetch(`${API_URL}/api/transcribe`, {
         method: 'POST',
@@ -52,7 +54,7 @@ export function useWhisperTranscription(options: UseWhisperTranscriptionOptions 
     } finally {
       setIsTranscribing(false);
     }
-  }, [onTranscriptionComplete, onError]);
+  }, [language, onTranscriptionComplete, onError]);
 
   return {
     transcribe,

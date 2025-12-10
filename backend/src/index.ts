@@ -144,6 +144,7 @@ app.post(
     }
 
     const file = req.file;
+    const language = (req.body?.language as string) || undefined;
 
     const mimeToExtension: Record<string, string> = {
       "audio/webm": ".webm",
@@ -240,7 +241,7 @@ app.post(
       name: "whisper-transcription",
       model: "whisper-1",
       modelParameters: {
-        language: "auto-detect",
+        language: language || "auto-detect",
         response_format: "json",
       },
       input: {
@@ -249,6 +250,7 @@ app.post(
         mimeType: file.mimetype,
         fileSize: file.size,
         qualityScore: qualityMetrics.qualityScore,
+        language: language || "auto-detect",
       },
     });
 
@@ -260,15 +262,22 @@ app.post(
         mimetype: file.mimetype,
         fileSize: file.size,
         fileType: audioFile instanceof File ? "File" : "Blob",
+        language: language || "auto-detect",
       },
-      "Sending file to OpenAI Whisper API (auto-detect language)",
+      language ? `Sending file to OpenAI Whisper API (language: ${language})` : "Sending file to OpenAI Whisper API (auto-detect language)",
     );
     
-    const transcription = await openai.audio.transcriptions.create({
+    const transcriptionParams: any = {
       file: audioFile as any,
       model: "whisper-1",
       response_format: "json",
-    });
+    };
+    
+    if (language) {
+      transcriptionParams.language = language;
+    }
+    
+    const transcription = await openai.audio.transcriptions.create(transcriptionParams);
     const apiProcessingTime = Date.now() - apiStartTime;
 
     const totalLatency = Date.now() - startTime;
@@ -705,7 +714,7 @@ app.post(
   inputValidationMiddleware(5000, "message"),
   async (req, res) => {
   const langfuse = getLangfuse();
-  const { message, sessionId = "default" } = req.body;
+  const { message, sessionId = "default", language } = req.body;
   const traceId = req.headers["x-langfuse-trace-id"] as string | undefined;
 
   res.setHeader("Content-Type", "text/event-stream");
@@ -747,6 +756,7 @@ app.post(
 
     finalResponse = await orchestrator.processMessageStream(
       message,
+      language,
       (chunk) => {
         const data = `data: ${JSON.stringify(chunk)}\n\n`;
         res.write(data);
@@ -839,7 +849,7 @@ app.post(
   inputValidationMiddleware(5000, "message"),
   async (req, res) => {
   const langfuse = getLangfuse();
-  const { message, sessionId = "default" } = req.body;
+  const { message, sessionId = "default", language } = req.body;
   const traceId = req.headers["x-langfuse-trace-id"] as string | undefined;
 
   const trace = traceId && langfuse
@@ -870,13 +880,13 @@ app.post(
       return res.status(400).json({ error: "Message is required" });
     }
 
-    logger.info({ message: message.substring(0, 100), sessionId }, "Processing chat message");
+    logger.info({ message: message.substring(0, 100), sessionId, language }, "Processing chat message");
     
     const orchestrator = await getOrchestrator(sessionId);
     
     let response: OrchestratorResponse;
     try {
-      response = await orchestrator.processMessage(message, trace || undefined);
+      response = await orchestrator.processMessage(message, language, trace || undefined);
       logger.debug({ agent: response.agent, responseLength: response.response.length }, "Message processed successfully");
     } catch (error) {
       logger.error({ error, message: message.substring(0, 100) }, "Error in orchestrator.processMessage");

@@ -5,7 +5,7 @@ import { VoiceOutput } from './components/VoiceOutput';
 import { TurnTakingIndicator } from './components/TurnTakingIndicator';
 import { VoiceSettings } from './components/VoiceSettings';
 import { Orders } from './components/Orders';
-import type { TTSVoice } from './components/VoiceSettings';
+import type { TTSVoice, LanguageCode } from './components/VoiceSettings';
 import { useContinuousVoiceConversation } from './hooks/useContinuousVoiceConversation';
 import { useStreamingChat } from './hooks/useStreamingChat';
 
@@ -32,6 +32,13 @@ function App() {
   const [view, setView] = useState<'chat' | 'orders'>('chat');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
+  // Language and voice settings state - declared early so it can be used in hooks
+  const [useNaturalTTS, setUseNaturalTTS] = useState(true);
+  const [ttsVoice, setTtsVoice] = useState<TTSVoice>('nova');
+  const [ttsRate, setTtsRate] = useState(1.0);
+  const [language, setLanguage] = useState<LanguageCode>('en');
+  const [naturalTTSSupported, setNaturalTTSSupported] = useState(false);
+  
   const {
     streamingText,
     isStreaming,
@@ -39,6 +46,7 @@ function App() {
     cancel: cancelStreaming,
   } = useStreamingChat({
     sessionId,
+    language,
     onComplete: (response) => {
       const assistantMessage: Message = {
         role: 'assistant',
@@ -61,11 +69,6 @@ function App() {
       setLoading(false);
     },
   });
-  
-  const [useNaturalTTS, setUseNaturalTTS] = useState(true);
-  const [ttsVoice, setTtsVoice] = useState<TTSVoice>('nova');
-  const [ttsRate, setTtsRate] = useState(1.0);
-  const [naturalTTSSupported, setNaturalTTSSupported] = useState(false);
   
   useEffect(() => {
     fetch(`${API_URL}/api/tts/health`)
@@ -101,6 +104,7 @@ function App() {
     useNaturalTTS,
     ttsVoice,
     ttsRate,
+    language,
     onMessage: (message) => {
       const newMessage: Message = {
         role: message.role,
@@ -183,6 +187,7 @@ function App() {
         body: JSON.stringify({
           message: transcript,
           sessionId,
+          language,
         }),
       });
 
@@ -234,17 +239,19 @@ function App() {
         <h1>AI Product Assistant</h1>
         <p>Ask about products and place orders naturally</p>
         <div className="header-actions">
+          <VoiceSettings
+            useNaturalTTS={useNaturalTTS}
+            ttsVoice={ttsVoice}
+            ttsRate={ttsRate}
+            language={language}
+            onNaturalTTSChange={setUseNaturalTTS}
+            onVoiceChange={setTtsVoice}
+            onRateChange={setTtsRate}
+            onLanguageChange={setLanguage}
+            naturalTTSSupported={naturalTTSSupported}
+          />
           {isVoiceSupported && (
             <>
-              <VoiceSettings
-                useNaturalTTS={useNaturalTTS}
-                ttsVoice={ttsVoice}
-                ttsRate={ttsRate}
-                onNaturalTTSChange={setUseNaturalTTS}
-                onVoiceChange={setTtsVoice}
-                onRateChange={setTtsRate}
-                naturalTTSSupported={naturalTTSSupported}
-              />
               <button
                 onClick={isVoiceConversationActive ? stopVoiceConversation : startVoiceConversation}
                 className={`voice-conversation-button ${isVoiceConversationActive ? 'active' : ''}`}
@@ -271,16 +278,11 @@ function App() {
                 )}
               </button>
               <span className="header-separator">|</span>
-              <button onClick={clearChat} className="clear-button" aria-label="Clear chat history">
-                Clear Chat
-              </button>
             </>
           )}
-          {!isVoiceSupported && (
-            <button onClick={clearChat} className="clear-button" aria-label="Clear chat history">
-              Clear Chat
-            </button>
-          )}
+          <button onClick={clearChat} className="clear-button" aria-label="Clear chat history">
+            Clear Chat
+          </button>
           <button
             onClick={() => setView('orders')}
             className="orders-button"
@@ -466,6 +468,7 @@ function App() {
                   <VoiceInput
                     onTranscript={handleVoiceTranscript}
                     disabled={loading || isVoiceConversationActive}
+                    language={language}
                   />
                   <button
                     onClick={sendMessage}

@@ -29,6 +29,7 @@ export interface StreamingChatChunk {
 
 interface UseStreamingChatOptions {
   sessionId: string;
+  language?: string;
   onComplete?: (response: {
     text: string;
     agent: 'rag' | 'order';
@@ -40,7 +41,7 @@ interface UseStreamingChatOptions {
 }
 
 export function useStreamingChat(options: UseStreamingChatOptions) {
-  const { sessionId, onComplete, onError } = options;
+  const { sessionId, language, onComplete, onError } = options;
   
   const [streamingText, setStreamingText] = useState('');
   const [metadata, setMetadata] = useState<StreamingChatChunk['metadata'] | null>(null);
@@ -79,7 +80,7 @@ export function useStreamingChat(options: UseStreamingChatOptions) {
         headers: { 
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message, sessionId }),
+        body: JSON.stringify({ message, sessionId, language }),
         signal: abortController.signal,
       });
 

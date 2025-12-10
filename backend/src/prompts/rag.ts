@@ -34,7 +34,52 @@ If multiple products match, list them briefly with names and prices, then ask wh
   ["human", "Context:\n{context}\n\nQuestion: {question}\n\nAnswer:"],
 ]);
 
-export function createRAGPromptWithHistory() {
+const LANGUAGE_NAMES: Record<string, string> = {
+  en: 'English',
+  es: 'Spanish',
+  fr: 'French',
+  de: 'German',
+  it: 'Italian',
+  pt: 'Portuguese',
+  ja: 'Japanese',
+  ko: 'Korean',
+  zh: 'Chinese',
+  ar: 'Arabic',
+  hi: 'Hindi',
+  ru: 'Russian',
+  nl: 'Dutch',
+  pl: 'Polish',
+  tr: 'Turkish',
+  sv: 'Swedish',
+  da: 'Danish',
+  no: 'Norwegian',
+  fi: 'Finnish',
+  cs: 'Czech',
+  ro: 'Romanian',
+  hu: 'Hungarian',
+  el: 'Greek',
+  th: 'Thai',
+  vi: 'Vietnamese',
+  id: 'Indonesian',
+  uk: 'Ukrainian',
+  he: 'Hebrew',
+  bg: 'Bulgarian',
+  hr: 'Croatian',
+  sk: 'Slovak',
+  sl: 'Slovenian',
+  et: 'Estonian',
+  lv: 'Latvian',
+  lt: 'Lithuanian',
+  mt: 'Maltese',
+  ga: 'Irish',
+  cy: 'Welsh',
+};
+
+export function createRAGPromptWithHistory(language?: string) {
+  const languageInstruction = language && LANGUAGE_NAMES[language]
+    ? `\n\nLANGUAGE SETTING: The user's language is set to ${LANGUAGE_NAMES[language]}. Respond ONLY in ${LANGUAGE_NAMES[language]}.`
+    : '';
+  
   return ChatPromptTemplate.fromMessages([
     [
       "system",
@@ -47,7 +92,7 @@ You MUST respond in the EXACT same language that the user uses in their CURRENT 
 - If the user writes in French, respond ONLY in French
 - The user's CURRENT question language takes ABSOLUTE priority - ignore conversation history language if it differs
 - DO NOT continue in a previous language if the user switches languages
-- Example: If previous conversation was in Spanish but user's current question is in English, respond in English
+- Example: If previous conversation was in Spanish but user's current question is in English, respond in English${languageInstruction}
 
 You are a helpful product assistant for an e-commerce store. Answer the user's questions about products based on the following context and previous conversation. 
 - Analyze the user's CURRENT question to detect its language

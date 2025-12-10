@@ -6,9 +6,10 @@ import './VoiceInput.css';
 interface VoiceInputProps {
   onTranscript: (transcript: string) => void;
   disabled?: boolean;
+  language?: string;
 }
 
-export function VoiceInput({ onTranscript, disabled = false }: VoiceInputProps) {
+export function VoiceInput({ onTranscript, disabled = false, language = 'en' }: VoiceInputProps) {
   const [showRecordingOverlay, setShowRecordingOverlay] = useState(false);
   const [localError, setLocalError] = useState<Error | null>(null);
 
@@ -27,6 +28,7 @@ export function VoiceInput({ onTranscript, disabled = false }: VoiceInputProps) 
     isTranscribing,
     error: transcriptionError,
   } = useWhisperTranscription({
+    language,
     onTranscriptionComplete: handleTranscriptionComplete,
     onError: handleTranscriptionError,
   });

@@ -43,8 +43,9 @@ export function createRAGChain(
   llm: BaseChatModel,
   agentName: string,
   useHistory: boolean = false,
+  language?: string,
 ): RunnableSequence {
-  const prompt = useHistory ? createRAGPromptWithHistory() : ragPrompt;
+  const prompt = useHistory ? createRAGPromptWithHistory(language) : ragPrompt;
   const secureParser = createSecureParserWithRetryAndFixing(llm, DEFAULT_CONFIG);
   const baseChain = prompt.pipe(llm);
   const guardedChain = prompt.pipe(llm).pipe(secureParser);
