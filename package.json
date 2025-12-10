@@ -1,0 +1,44 @@
+{
+  "name": "ai-product-assistant",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "AI-powered product assistant with RAG and autonomous order processing",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace=backend && npm run build --workspace=frontend",
+    "build:backend": "npm run build --workspace=backend",
+    "build:frontend": "npm run build --workspace=frontend",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "npm run dev --workspace=backend",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "dev:build-index": "npm run build-index --workspace=backend",
+    "test": "vitest --run",
+    "test:watch": "vitest",
+    "lint": "eslint backend/src frontend/src --ext .ts,.tsx",
+    "format": "prettier --write \"backend/**/*.ts\" \"frontend/src/**/*.{ts,tsx}\"",
+    "typecheck": "npm run typecheck --workspace=backend"
+  },
+  "keywords": [
+    "rag",
+    "langchain",
+    "chatbot",
+    "e-commerce",
+    "function-calling",
+    "vector-search"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/form-data": "^2.2.1",
+    "axios": "^1.13.2",
+    "concurrently": "^9.1.2",
+    "eslint": "^9.39.1",
+    "form-data": "^4.0.5",
+    "prettier": "^3.6.2",
+    "vitest": "^4.0.8"
+  }
+}

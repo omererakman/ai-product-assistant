@@ -1,0 +1,16 @@
+node_modules/
+dist/
+build/
+.env
+*.log
+*.db
+*.db-journal
+.DS_Store
+coverage/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+chroma-data/
+vector-store/

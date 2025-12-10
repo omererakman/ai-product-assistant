@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Audio Test</title>
+</head>
+<body>
+    <h1>Audio Output Test</h1>
+
+    <h2>Test 1: HTML Audio Element</h2>
+    <button onclick="testHTMLAudio()">Play Test Sound (HTML Audio)</button>
+    <audio id="testAudio" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=" controls></audio>
+
+    <h2>Test 2: Web Audio API Oscillator</h2>
+    <button onclick="testWebAudio()">Play Test Tone (Web Audio API)</button>
+
+    <h2>Test 3: Speech Synthesis</h2>
+    <button onclick="testSpeechSynthesis()">Speak Test (Browser TTS)</button>
+
+    <div id="status"></div>
+
+    <script>
+        const status = document.getElementById('status');
+
+        function testHTMLAudio() {
+            status.innerHTML = 'Testing HTML Audio...';
+            const audio = document.getElementById('testAudio');
+            audio.play().then(() => {
+                status.innerHTML = '✅ HTML Audio play() succeeded';
+            }).catch(err => {
+                status.innerHTML = '❌ HTML Audio error: ' + err.message;
+            });
+        }
+
+        function testWebAudio() {
+            status.innerHTML = 'Testing Web Audio API...';
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                console.log('AudioContext state:', ctx.state);
+                console.log('AudioContext sampleRate:', ctx.sampleRate);
+                console.log('AudioContext destination:', ctx.destination);
+
+                if (ctx.state === 'suspended') {
+                    ctx.resume();
+                }
+
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.frequency.value = 440;
+                osc.type = 'sine';
+                gain.gain.value = 0.3;
+
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.5);
+
+                status.innerHTML = '✅ Web Audio API tone played (did you hear it?)';
+                console.log('Web Audio API tone played');
+            } catch (err) {
+                status.innerHTML = '❌ Web Audio API error: ' + err.message;
+                console.error(err);
+            }
+        }
+
+        function testSpeechSynthesis() {
+            status.innerHTML = 'Testing Speech Synthesis...';
+            const utterance = new SpeechSynthesisUtterance('Testing audio output');
+            utterance.onstart = () => {
+                status.innerHTML = '✅ Speech Synthesis started';
+            };
+            utterance.onend = () => {
+                status.innerHTML = '✅ Speech Synthesis completed';
+            };
+            utterance.onerror = (err) => {
+                status.innerHTML = '❌ Speech Synthesis error: ' + err.error;
+            };
+            window.speechSynthesis.speak(utterance);
+        }
+    </script>
+</body>
+</html>

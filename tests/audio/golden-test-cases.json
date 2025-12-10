@@ -1,0 +1,59 @@
+{
+  "version": "1.0.0",
+  "description": "Golden test cases for audio transcription evaluation",
+  "testCases": [
+    {
+      "id": "clean-speech-001",
+      "category": "clean-speech",
+      "description": "Clear, well-enunciated speech",
+      "expectedTranscript": "What is the price of the iPhone 15 Pro?",
+      "audioFile": "samples/clean-speech-001.mp3",
+      "metadata": {
+        "accent": "american",
+        "speechRate": "normal",
+        "backgroundNoise": "none"
+      }
+    },
+    {
+      "id": "product-names-001",
+      "category": "domain-jargon",
+      "description": "Product name pronunciation",
+      "expectedTranscript": "I want to buy a MacBook Pro",
+      "audioFile": "samples/product-names-001.mp3",
+      "metadata": {
+        "accent": "american",
+        "speechRate": "normal",
+        "backgroundNoise": "none"
+      }
+    },
+    {
+      "id": "order-intent-001",
+      "category": "critical-scenarios",
+      "description": "Order placement phrase",
+      "expectedTranscript": "I'll take two iPhone 15 Pros please",
+      "audioFile": "samples/order-intent-001.mp3",
+      "metadata": {
+        "accent": "american",
+        "speechRate": "normal",
+        "backgroundNoise": "low"
+      }
+    }
+  ],
+  "categories": {
+    "clean-speech": {
+      "description": "Clear, high-quality audio samples",
+      "werThreshold": 0.05,
+      "priority": "high"
+    },
+    "domain-jargon": {
+      "description": "Product names and technical terms",
+      "werThreshold": 0.08,
+      "priority": "high"
+    },
+    "critical-scenarios": {
+      "description": "Order placement and critical phrases",
+      "werThreshold": 0.05,
+      "priority": "critical"
+    }
+  }
+}

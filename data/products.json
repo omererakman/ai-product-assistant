@@ -1,0 +1,1464 @@
+[
+  {
+    "product_id": "PROD-001",
+    "name": "iPhone 15 Pro",
+    "description": "Latest iPhone with A17 Pro chip, titanium design, and advanced camera system. Features 6.1-inch Super Retina XDR display, 48MP main camera, and all-day battery life.",
+    "price": 999,
+    "category": "Electronics",
+    "sub_category": "Smart Phone",
+    "stock_status": "in_stock",
+    "specifications": {
+      "storage": "128GB",
+      "color": "Natural Titanium",
+      "screen_size": "6.1 inches",
+      "camera": "48MP",
+      "os": "iOS 17",
+      "processor": "A17 Pro",
+      "battery": "All-day battery life",
+      "s_pen": "No",
+      "updates": "N/A"
+    }
+  },
+  {
+    "product_id": "PROD-002",
+    "name": "Samsung Galaxy S24 Ultra",
+    "description": "Premium Android smartphone with S Pen, 200MP camera, and Snapdragon 8 Gen 3 processor. Features 6.8-inch Dynamic AMOLED display and 5000mAh battery.",
+    "price": 1199,
+    "category": "Electronics",
+    "sub_category": "Smart Phone",
+    "stock_status": "in_stock",
+    "specifications": {
+      "storage": "256GB",
+      "color": "Titanium Black",
+      "screen_size": "6.8 inches",
+      "camera": "200MP",
+      "os": "Android 14",
+      "processor": "Snapdragon 8 Gen 3",
+      "battery": "5000mAh",
+      "s_pen": "Included",
+      "updates": "5 years"
+    }
+  },
+  {
+    "product_id": "PROD-003",
+    "name": "MacBook Pro 16-inch",
+    "description": "Powerful laptop with M3 Pro chip, 16-inch Liquid Retina XDR display, and up to 22 hours of battery life. Perfect for professionals and creatives.",
+    "price": 2499,
+    "category": "Computers",
+    "sub_category": "Laptop",
+    "stock_status": "in_stock",
+    "specifications": {
+      "processor": "M3 Pro",
+      "ram": "18GB",
+      "storage": "512GB SSD",
+      "display": "16.2 inches",
+      "os": "macOS Sonoma",
+      "graphics": "Integrated",
+      "battery_life": "Up to 22 hours"
+    }
+  },
+  {
+    "product_id": "PROD-004",
+    "name": "Dell XPS 15",
+    "description": "Premium Windows laptop with Intel Core i7, 15.6-inch OLED display, and NVIDIA RTX graphics. Ideal for content creation and gaming.",
+    "price": 1899,
+    "category": "Computers",
+    "sub_category": "Laptop",
+    "stock_status": "in_stock",
+    "specifications": {
+      "processor": "Intel Core i7-13700H",
+      "ram": "16GB",
+      "storage": "512GB SSD",
+      "display": "15.6 inches OLED",
+      "os": "Windows 11",
+      "graphics": "NVIDIA RTX"
+    }
+  },
+  {
+    "product_id": "PROD-005",
+    "name": "Sony WH-1000XM5 Headphones",
+    "description": "Industry-leading noise cancellation headphones with 30-hour battery life, quick charge, and exceptional sound quality.",
+    "price": 379,
+    "category": "Audio",
+    "sub_category": "Over-Ear Headphones",
+    "stock_status": "in_stock",
+    "specifications": {
+      "noise_cancellation": "Yes",
+      "battery_life": "30 hours",
+      "connectivity": "Bluetooth 5.2",
+      "quick_charge": "3 hours playback in 3 minutes",
+      "processor": "QN1"
+    }
+  },
+  {
+    "product_id": "PROD-006",
+    "name": "AirPods Pro (2nd Gen)",
+    "description": "Premium wireless earbuds with active noise cancellation, spatial audio, and adaptive transparency mode. Features H2 chip for enhanced performance.",
+    "price": 249,
+    "category": "Audio",
+    "sub_category": "Wireless Earbuds",
+    "stock_status": "in_stock",
+    "specifications": {
+      "noise_cancellation": "Yes",
+      "battery_life": "6 hours (30 with case)",
+      "connectivity": "Bluetooth",
+      "chip": "H2",
+      "spatial_audio": "Yes"
+    }
+  },
+  {
+    "product_id": "PROD-007",
+    "name": "iPad Pro 12.9-inch",
+    "description": "Powerful tablet with M2 chip, 12.9-inch Liquid Retina XDR display, and Apple Pencil support. Perfect for creative professionals.",
+    "price": 1099,
+    "category": "Tablets",
+    "sub_category": "Tablet",
+    "stock_status": "in_stock",
+    "specifications": {
+      "processor": "M2",
+      "storage": "128GB",
+      "display": "12.9 inches",
+      "pencil_support": "Yes",
+      "os": "iPadOS 17"
+    }
+  },
+  {
+    "product_id": "PROD-008",
+    "name": "Samsung Galaxy Tab S9 Ultra",
+    "description": "Large Android tablet with Snapdragon 8 Gen 2, 14.6-inch Super AMOLED display, and S Pen included. Great for productivity and entertainment.",
+    "price": 1199,
+    "category": "Tablets",
+    "sub_category": "Tablet",
+    "stock_status": "in_stock",
+    "specifications": {
+      "processor": "Snapdragon 8 Gen 2",
+      "storage": "256GB",
+      "display": "14.6 inches",
+      "pencil_support": "Yes",
+      "os": "Android 13"
+    }
+  },
+  {
+    "product_id": "PROD-009",
+    "name": "Nintendo Switch OLED",
+    "description": "Gaming console with 7-inch OLED screen, enhanced audio, and 64GB internal storage. Includes dock for TV play.",
+    "price": 299,
+    "category": "Gaming",
+    "sub_category": "Handheld Console",
+    "stock_status": "in_stock",
+    "specifications": {
+      "screen": "7-inch OLED",
+      "storage": "64GB",
+      "controllers": "Joy-Con included",
+      "battery_life": "4.5-9 hours",
+      "backward_compatibility": "No"
+    }
+  },
+  {
+    "product_id": "PROD-010",
+    "name": "PlayStation 5",
+    "description": "Next-gen gaming console with AMD Zen 2 processor, ray tracing, and 825GB SSD. Includes DualSense wireless controller.",
+    "price": 449,
+    "category": "Gaming",
+    "sub_category": "Gaming Console",
+    "stock_status": "low_stock",
+    "specifications": {
+      "storage": "825GB SSD",
+      "controller": "DualSense included",
+      "resolution": "4K",
+      "processor": "AMD Zen 2",
+      "ray_tracing": "Yes",
+      "upscaling": "No"
+    }
+  },
+  {
+    "product_id": "PROD-011",
+    "name": "Xbox Series X",
+    "description": "Powerful gaming console with AMD Zen 2 processor, 1TB SSD, and 4K gaming support. Includes wireless controller.",
+    "price": 499,
+    "category": "Gaming",
+    "sub_category": "Gaming Console",
+    "stock_status": "in_stock",
+    "specifications": {
+      "storage": "1TB SSD",
+      "controller": "Wireless included",
+      "resolution": "4K",
+      "processor": "AMD Zen 2",
+      "ray_tracing": "Yes",
+      "upscaling": "No"
+    }
+  },
+  {
+    "product_id": "PROD-012",
+    "name": "Canon EOS R6 Mark II",
+    "description": "Professional mirrorless camera with 24.2MP full-frame sensor, 4K video recording, and advanced autofocus system.",
+    "price": 2499,
+    "category": "Cameras",
+    "sub_category": "Mirrorless Camera",
+    "stock_status": "in_stock",
+    "specifications": {
+      "sensor": "24.2MP Full-Frame",
+      "video": "4K 60fps",
+      "autofocus": "Dual Pixel CMOS AF",
+      "iso_range": "100-102400"
+    }
+  },
+  {
+    "product_id": "PROD-013",
+    "name": "Sony Alpha 7 IV",
+    "description": "Full-frame mirrorless camera with 33MP sensor, 4K video, and real-time eye autofocus. Perfect for photographers and videographers.",
+    "price": 2498,
+    "category": "Cameras",
+    "sub_category": "Mirrorless Camera",
+    "stock_status": "in_stock",
+    "specifications": {
+      "sensor": "33MP Full-Frame",
+      "video": "4K 30fps",
+      "autofocus": "Real-time Eye AF",
+      "iso_range": "100-51200"
+    }
+  },
+  {
+    "product_id": "PROD-014",
+    "name": "DJI Mini 4 Pro Drone",
+    "description": "Compact drone with 4K HDR video, obstacle sensing, and 34-minute flight time. Includes intelligent flight modes.",
+    "price": 1099,
+    "category": "Drones",
+    "sub_category": "Consumer Drone",
+    "stock_status": "in_stock",
+    "specifications": {
+      "video": "4K HDR",
+      "flight_time": "34 minutes",
+      "obstacle_sensing": "360°",
+      "max_speed": "16 m/s",
+      "weight": "Under 250g"
+    }
+  },
+  {
+    "product_id": "PROD-015",
+    "name": "Apple Watch Series 9",
+    "description": "Advanced smartwatch with S9 SiP chip, always-on Retina display, and health monitoring features. Includes GPS and cellular options.",
+    "price": 399,
+    "category": "Wearables",
+    "sub_category": "Smartwatch",
+    "stock_status": "in_stock",
+    "specifications": {
+      "display": "Always-on Retina",
+      "battery_life": "18 hours",
+      "gps": "Yes",
+      "os": "watchOS 10",
+      "chip": "S9 SiP",
+      "health_tracking": "Advanced"
+    }
+  },
+  {
+    "product_id": "PROD-016",
+    "name": "Samsung Galaxy Watch 6",
+    "description": "Premium smartwatch with advanced health tracking, sleep monitoring, and 40-hour battery life. Compatible with Android and iOS.",
+    "price": 299,
+    "category": "Wearables",
+    "sub_category": "Smartwatch",
+    "stock_status": "in_stock",
+    "specifications": {
+      "display": "Super AMOLED",
+      "battery_life": "40 hours",
+      "gps": "Yes",
+      "health_tracking": "Advanced",
+      "os": "Wear OS 4"
+    }
+  },
+  {
+    "product_id": "PROD-017",
+    "name": "LG OLED C3 65-inch TV",
+    "description": "Premium 4K OLED TV with Dolby Vision, HDR10, and webOS. Features α9 AI Processor Gen6 for enhanced picture quality.",
+    "price": 1399,
+    "category": "TVs",
+    "sub_category": "OLED TV",
+    "stock_status": "in_stock",
+    "specifications": {
+      "size": "65 inches",
+      "resolution": "4K OLED",
+      "smart_platform": "webOS",
+      "hdr": "Dolby Vision, HDR10",
+      "refresh_rate": "120Hz",
+      "processor": "α9 AI Gen6"
+    }
+  },
+  {
+    "product_id": "PROD-018",
+    "name": "Samsung QLED Q80C 75-inch TV",
+    "description": "4K QLED TV with Quantum HDR, Object Tracking Sound, and Tizen OS. Features Quantum Processor 4K for upscaling.",
+    "price": 1799,
+    "category": "TVs",
+    "sub_category": "QLED TV",
+    "stock_status": "in_stock",
+    "specifications": {
+      "size": "75 inches",
+      "resolution": "4K QLED",
+      "smart_platform": "Tizen",
+      "hdr": "Quantum HDR",
+      "refresh_rate": "120Hz",
+      "processor": "Quantum Processor 4K"
+    }
+  },
+  {
+    "product_id": "PROD-019",
+    "name": "Dyson V15 Detect Vacuum",
+    "description": "Cordless vacuum with laser detection, HEPA filtration, and 60-minute runtime. Features intelligent suction adjustment.",
+    "price": 749,
+    "category": "Home",
+    "sub_category": "Vacuum Cleaner",
+    "stock_status": "in_stock",
+    "specifications": {
+      "runtime": "60 minutes",
+      "filtration": "HEPA",
+      "type": "Cordless",
+      "laser_detection": "Yes",
+      "weight": "2.6 kg"
+    }
+  },
+  {
+    "product_id": "PROD-020",
+    "name": "Roomba j9+ Robot Vacuum",
+    "description": "Self-emptying robot vacuum with obstacle avoidance, mapping, and app control. Automatically empties into base station.",
+    "price": 899,
+    "category": "Home",
+    "sub_category": "Robot Vacuum",
+    "stock_status": "in_stock",
+    "specifications": {
+      "self_emptying": "Yes",
+      "mapping": "Yes",
+      "runtime": "120 minutes",
+      "obstacle_avoidance": "Yes"
+    }
+  },
+  {
+    "product_id": "PROD-021",
+    "name": "Nespresso Vertuo Next",
+    "description": "Coffee machine with Centrifusion technology, 5 cup sizes, and automatic capsule recognition. Includes milk frother.",
+    "price": 199,
+    "category": "Home",
+    "sub_category": "Coffee Machine",
+    "stock_status": "in_stock",
+    "specifications": {
+      "cup_sizes": "5",
+      "milk_frother": "Included",
+      "technology": "Centrifusion",
+      "water_tank": "1.2L"
+    }
+  },
+  {
+    "product_id": "PROD-022",
+    "name": "KitchenAid Stand Mixer",
+    "description": "Professional stand mixer with 10 speeds, tilt-head design, and multiple attachments. Perfect for baking enthusiasts.",
+    "price": 449,
+    "category": "Home",
+    "sub_category": "Kitchen Appliance",
+    "stock_status": "in_stock",
+    "specifications": {
+      "speeds": "10",
+      "attachments": "Multiple included",
+      "capacity": "5 quart",
+      "power": "325W"
+    }
+  },
+  {
+    "product_id": "PROD-023",
+    "name": "Instant Pot Duo Plus",
+    "description": "9-in-1 pressure cooker with 10 functions including pressure cooking, slow cooking, and yogurt making. 6-quart capacity.",
+    "price": 129,
+    "category": "Home",
+    "sub_category": "Pressure Cooker",
+    "stock_status": "in_stock",
+    "specifications": {
+      "functions": "9-in-1",
+      "capacity": "6 quart",
+      "safety": "10 safety features",
+      "pressure_levels": "High and Low"
+    }
+  },
+  {
+    "product_id": "PROD-024",
+    "name": "Nike Air Max 270",
+    "description": "Comfortable running shoes with Air Max cushioning, breathable mesh upper, and durable rubber outsole. Available in multiple colors.",
+    "price": 150,
+    "category": "Footwear",
+    "sub_category": "Running Shoes",
+    "stock_status": "in_stock",
+    "specifications": {
+      "cushioning": "Air Max",
+      "upper": "Mesh",
+      "sizes": "6-13",
+      "outsole": "Rubber",
+      "weight": "Lightweight"
+    }
+  },
+  {
+    "product_id": "PROD-025",
+    "name": "Adidas Ultraboost 23",
+    "description": "Premium running shoes with Boost midsole, Primeknit upper, and Continental rubber outsole. Maximum energy return and comfort.",
+    "price": 180,
+    "category": "Footwear",
+    "sub_category": "Running Shoes",
+    "stock_status": "in_stock",
+    "specifications": {
+      "midsole": "Boost",
+      "upper": "Primeknit",
+      "sizes": "6-13",
+      "outsole": "Continental rubber"
+    }
+  },
+  {
+    "product_id": "PROD-026",
+    "name": "Patagonia Down Jacket",
+    "description": "Warm down jacket with 800-fill-power down, water-resistant shell, and ethical down certification. Perfect for cold weather.",
+    "price": 299,
+    "category": "Clothing",
+    "sub_category": "Outerwear",
+    "stock_status": "in_stock",
+    "specifications": {
+      "fill_power": "800",
+      "fabric": "Down",
+      "water_resistant": "Yes",
+      "sizes": "XS-XXL",
+      "material": "Down",
+      "hood": "Yes"
+    }
+  },
+  {
+    "product_id": "PROD-027",
+    "name": "The North Face Apex Bionic Jacket",
+    "description": "Versatile softshell jacket with windproof and water-resistant fabric. Features zippered pockets and adjustable hood.",
+    "price": 199,
+    "category": "Clothing",
+    "sub_category": "Outerwear",
+    "stock_status": "in_stock",
+    "specifications": {
+      "fabric": "Windproof, Water-resistant",
+      "pockets": "Zippered",
+      "sizes": "XS-XXL",
+      "hood": "Adjustable"
+    }
+  },
+  {
+    "product_id": "PROD-028",
+    "name": "Yeti Tundra 65 Cooler",
+    "description": "Premium hard cooler with 2-inch insulation, bear-resistant certification, and T-Rex lid latches. Holds 39 cans.",
+    "price": 375,
+    "category": "Outdoor",
+    "sub_category": "Cooler",
+    "stock_status": "in_stock",
+    "specifications": {
+      "capacity": "39 cans",
+      "insulation": "2 inches",
+      "bear_resistant": "Yes",
+      "weight": "23 lbs"
+    }
+  },
+  {
+    "product_id": "PROD-029",
+    "name": "Coleman Sundome Tent 4-Person",
+    "description": "Weatherproof tent with WeatherTec system, large windows, and easy setup. Perfect for camping trips.",
+    "price": 89,
+    "category": "Outdoor",
+    "sub_category": "Tent",
+    "stock_status": "in_stock",
+    "specifications": {
+      "capacity": "4 person",
+      "weatherproof": "WeatherTec",
+      "setup_time": "10 minutes",
+      "weight": "7.8 lbs"
+    }
+  },
+  {
+    "product_id": "PROD-030",
+    "name": "Hydro Flask 32oz Water Bottle",
+    "description": "Insulated stainless steel water bottle that keeps drinks cold for 24 hours or hot for 12 hours. BPA-free and leak-proof.",
+    "price": 45,
+    "category": "Outdoor",
+    "sub_category": "Water Bottle",
+    "stock_status": "in_stock",
+    "specifications": {
+      "capacity": "32oz",
+      "insulation": "24h cold, 12h hot",
+      "material": "Stainless Steel",
+      "bpa_free": "Yes"
+    }
+  },
+  {
+    "product_id": "PROD-031",
+    "name": "Fitbit Charge 6",
+    "description": "Advanced fitness tracker with heart rate monitoring, sleep tracking, and 7-day battery life. Water-resistant up to 50m.",
+    "price": 159,
+    "category": "Wearables",
+    "sub_category": "Fitness Tracker",
+    "stock_status": "in_stock",
+    "specifications": {
+      "battery_life": "7 days",
+      "water_resistant": "50m",
+      "tracking": "Heart rate, Sleep",
+      "display": "Color touchscreen"
+    }
+  },
+  {
+    "product_id": "PROD-032",
+    "name": "Garmin Forerunner 265",
+    "description": "GPS running watch with advanced training metrics, music storage, and up to 13 days battery life. Perfect for serious runners.",
+    "price": 449,
+    "category": "Wearables",
+    "sub_category": "Sports Watch",
+    "stock_status": "in_stock",
+    "specifications": {
+      "battery_life": "13 days",
+      "gps": "Yes",
+      "music_storage": "Yes",
+      "display": "AMOLED"
+    }
+  },
+  {
+    "product_id": "PROD-033",
+    "name": "Bose QuietComfort 45 Headphones",
+    "description": "Premium noise-cancelling headphones with 24-hour battery life and comfortable over-ear design. Excellent sound quality.",
+    "price": 279,
+    "category": "Audio",
+    "sub_category": "Over-Ear Headphones",
+    "stock_status": "in_stock",
+    "specifications": {
+      "noise_cancellation": "Yes",
+      "battery_life": "24 hours",
+      "connectivity": "Bluetooth",
+      "quick_charge": "15 minutes for 3 hours",
+      "processor": "Custom"
+    }
+  },
+  {
+    "product_id": "PROD-034",
+    "name": "JBL Flip 6 Portable Speaker",
+    "description": "Waterproof portable speaker with 12-hour battery life and powerful bass. Perfect for outdoor adventures and parties.",
+    "price": 129,
+    "category": "Audio",
+    "sub_category": "Portable Speaker",
+    "stock_status": "low_stock",
+    "specifications": {
+      "battery_life": "12 hours",
+      "waterproof": "IPX7",
+      "connectivity": "Bluetooth",
+      "power": "30W"
+    }
+  },
+  {
+    "product_id": "PROD-035",
+    "name": "Logitech MX Master 3S Mouse",
+    "description": "Premium wireless mouse with Darkfield tracking, 70-day battery life, and ergonomic design. Perfect for productivity.",
+    "price": 99,
+    "category": "Accessories",
+    "sub_category": "Computer Mouse",
+    "stock_status": "in_stock",
+    "specifications": {
+      "battery_life": "70 days",
+      "tracking": "Darkfield",
+      "connectivity": "Wireless",
+      "dpi": "8000"
+    }
+  },
+  {
+    "product_id": "PROD-036",
+    "name": "iPhone 16 Pro",
+    "description": "Latest iPhone with A18 Pro chip, titanium design, and advanced camera system with 5x telephoto zoom. Features 6.3-inch Super Retina XDR display and all-day battery life.",
+    "price": 999,
+    "category": "Electronics",
+    "sub_category": "Smart Phone",
+    "stock_status": "in_stock",
+    "specifications": {
+      "storage": "256GB",
+      "color": "Titanium Black",
+      "screen_size": "6.3 inches",
+      "camera": "48MP with 5x telephoto",
+      "os": "iOS 18",
+      "processor": "A18 Pro",
+      "battery": "All-day battery life",
+      "s_pen": "No",
+      "updates": "N/A"
+    }
+  },
+  {
+    "product_id": "PROD-037",
+    "name": "iPhone 16 Pro Max",
+    "description": "Largest iPhone with A18 Pro chip, 6.9-inch Super Retina XDR display, and advanced camera system with 5x telephoto zoom. Premium titanium design.",
+    "price": 1199,
+    "category": "Electronics",
+    "sub_category": "Smart Phone",
+    "stock_status": "in_stock",
+    "specifications": {
+      "storage": "256GB",
+      "color": "Natural Titanium",
+      "screen_size": "6.9 inches",
+      "camera": "48MP with 5x telephoto",
+      "os": "iOS 18",
+      "processor": "A18 Pro",
+      "battery": "All-day battery life",
+      "s_pen": "No",
+      "updates": "N/A"
+    }
+  },
+  {
+    "product_id": "PROD-038",
+    "name": "Google Pixel 9 Pro",
+    "description": "Premium Android smartphone with Google Tensor G4 chip, advanced AI features, and exceptional camera system. Features 6.3-inch OLED display and 7 years of updates.",
+    "price": 999,
+    "category": "Electronics",
+    "sub_category": "Smart Phone",
+    "stock_status": "in_stock",
+    "specifications": {
+      "storage": "256GB",
+      "color": "Obsidian",
+      "screen_size": "6.3 inches",
+      "camera": "50MP with AI enhancements",
+      "os": "Android 15",
+      "processor": "Google Tensor G4",
+      "battery": "5050mAh",
+      "s_pen": "No",
+      "updates": "7 years"
+    }
+  },
+  {
+    "product_id": "PROD-039",
+    "name": "MacBook Pro 14-inch M4",
+    "description": "Powerful laptop with M4 chip, 14-inch Liquid Retina XDR display, and up to 22 hours of battery life. Features Neural Engine for AI acceleration.",
+    "price": 1999,
+    "category": "Computers",
+    "sub_category": "Laptop",
+    "stock_status": "in_stock",
+    "specifications": {
+      "processor": "M4",
+      "ram": "18GB",
+      "storage": "512GB SSD",
+      "display": "14.2 inches",
+      "os": "macOS Sequoia",
+      "graphics": "Integrated",
+      "battery_life": "Up to 22 hours"
+    }
+  },
+  {
+    "product_id": "PROD-040",
+    "name": "MacBook Pro 16-inch M4 Pro",
+    "description": "Professional laptop with M4 Pro chip, 16-inch Liquid Retina XDR display, and exceptional performance for creative professionals and developers.",
+    "price": 2499,
+    "category": "Computers",
+    "sub_category": "Laptop",
+    "stock_status": "in_stock",
+    "specifications": {
+      "processor": "M4 Pro",
+      "ram": "36GB",
+      "storage": "1TB SSD",
+      "display": "16.2 inches",
+      "os": "macOS Sequoia",
+      "graphics": "Integrated",
+      "battery_life": "Up to 22 hours"
+    }
+  },
+  {
+    "product_id": "PROD-041",
+    "name": "iPad Air 13-inch M2",
+    "description": "Large tablet with M2 chip, 13-inch Liquid Retina display, and Apple Pencil support. Perfect for productivity and creative work.",
+    "price": 799,
+    "category": "Tablets",
+    "sub_category": "Tablet",
+    "stock_status": "in_stock",
+    "specifications": {
+      "processor": "M2",
+      "storage": "128GB",
+      "display": "13 inches",
+      "pencil_support": "Yes",
+      "os": "iPadOS 17"
+    }
+  },
+  {
+    "product_id": "PROD-042",
+    "name": "Meta Quest 3",
+    "description": "Advanced VR headset with mixed reality capabilities, Snapdragon XR2 Gen 2 processor, and high-resolution displays. Includes Touch Plus controllers.",
+    "price": 499,
+    "category": "Gaming",
+    "sub_category": "VR Headset",
+    "stock_status": "in_stock",
+    "specifications": {
+      "resolution": "2064x2208 per eye",
+      "processor": "Snapdragon XR2 Gen 2",
+      "controllers": "Touch Plus included",
+      "storage": "128GB",
+      "battery_life": "2-3 hours"
+    }
+  },
+  {
+    "product_id": "PROD-043",
+    "name": "Apple Vision Pro",
+    "description": "Spatial computing device with dual 4K displays, eye tracking, and hand tracking. Features visionOS and seamless integration with Apple ecosystem.",
+    "price": 3499,
+    "category": "Electronics",
+    "sub_category": "AR/VR Headset",
+    "stock_status": "in_stock",
+    "specifications": {
+      "displays": "Dual 4K micro-OLED",
+      "processor": "M2 + R1",
+      "storage": "256GB",
+      "os": "visionOS",
+      "eye_tracking": "Yes"
+    }
+  },
+  {
+    "product_id": "PROD-044",
+    "name": "Steam Deck OLED",
+    "description": "Handheld gaming PC with 7.4-inch OLED display, improved battery life, and access to Steam library. Perfect for gaming on the go.",
+    "price": 549,
+    "category": "Gaming",
+    "sub_category": "Handheld Gaming PC",
+    "stock_status": "in_stock",
+    "specifications": {
+      "display": "7.4-inch OLED",
+      "storage": "1TB SSD",
+      "battery_life": "3-12 hours",
+      "os": "SteamOS",
+      "processor": "AMD Zen 2"
+    }
+  },
+  {
+    "product_id": "PROD-045",
+    "name": "Google Pixel Watch 3",
+    "description": "Premium smartwatch with advanced health tracking, Google Assistant, and 24-hour battery life. Features Fitbit integration and safety features.",
+    "price": 349,
+    "category": "Wearables",
+    "sub_category": "Smartwatch",
+    "stock_status": "in_stock",
+    "specifications": {
+      "display": "AMOLED",
+      "battery_life": "24 hours",
+      "gps": "Yes",
+      "health_tracking": "Advanced",
+      "os": "Wear OS 4"
+    }
+  },
+  {
+    "product_id": "PROD-046",
+    "name": "Samsung Galaxy Buds3 Pro",
+    "description": "Premium wireless earbuds with intelligent ANC, 360 Audio, and 8-hour battery life. Features advanced sound quality and seamless Galaxy integration.",
+    "price": 249,
+    "category": "Audio",
+    "sub_category": "Wireless Earbuds",
+    "stock_status": "in_stock",
+    "specifications": {
+      "noise_cancellation": "Intelligent ANC",
+      "battery_life": "8 hours (30 with case)",
+      "connectivity": "Bluetooth 5.3",
+      "chip": "Samsung",
+      "spatial_audio": "Yes",
+      "audio": "360 Audio"
+    }
+  },
+  {
+    "product_id": "PROD-047",
+    "name": "AirPods Max 2",
+    "description": "Premium over-ear headphones with H2 chip, active noise cancellation, and spatial audio. Features exceptional sound quality and 30-hour battery life.",
+    "price": 549,
+    "category": "Audio",
+    "sub_category": "Over-Ear Headphones",
+    "stock_status": "in_stock",
+    "specifications": {
+      "noise_cancellation": "Active ANC",
+      "battery_life": "30 hours",
+      "connectivity": "Bluetooth",
+      "chip": "H2",
+      "spatial_audio": "Yes",
+      "quick_charge": "5 minutes for 1.5 hours"
+    }
+  },
+  {
+    "product_id": "PROD-048",
+    "name": "Meta Ray-Ban Smart Glasses",
+    "description": "Smart glasses with built-in camera, speakers, and Meta AI. Features hands-free calling, music, and live streaming capabilities.",
+    "price": 299,
+    "category": "Wearables",
+    "sub_category": "Smart Glasses",
+    "stock_status": "in_stock",
+    "specifications": {
+      "camera": "12MP",
+      "battery_life": "4-6 hours",
+      "ai": "Meta AI built-in",
+      "connectivity": "Bluetooth"
+    }
+  },
+  {
+    "product_id": "PROD-049",
+    "name": "Framework Laptop 16",
+    "description": "Modular laptop with upgradable components, AMD Ryzen 7040 Series processor, and 16-inch display. Repairable and customizable design.",
+    "price": 1399,
+    "category": "Computers",
+    "sub_category": "Laptop",
+    "stock_status": "in_stock",
+    "specifications": {
+      "processor": "AMD Ryzen 7040",
+      "ram": "16GB (upgradable)",
+      "storage": "512GB SSD (upgradable)",
+      "display": "16 inches",
+      "os": "Windows 11 or Linux",
+      "battery_life": "Up to 10 hours"
+    }
+  },
+  {
+    "product_id": "PROD-050",
+    "name": "Sony WH-1000XM6 Headphones",
+    "description": "Latest noise-cancelling headphones with QN1 processor, 30-hour battery life, and exceptional sound quality. Features quick charge and multipoint pairing.",
+    "price": 399,
+    "category": "Audio",
+    "sub_category": "Over-Ear Headphones",
+    "stock_status": "in_stock",
+    "specifications": {
+      "noise_cancellation": "Industry-leading",
+      "battery_life": "30 hours",
+      "connectivity": "Bluetooth 5.3",
+      "processor": "QN1",
+      "quick_charge": "3 minutes for 3 hours"
+    }
+  },
+  {
+    "product_id": "PROD-051",
+    "name": "Samsung Galaxy S25 Ultra",
+    "description": "Premium Android smartphone with Snapdragon 8 Gen 4, 200MP camera system, and S Pen. Features 6.9-inch Dynamic AMOLED 2X display.",
+    "price": 1299,
+    "category": "Electronics",
+    "sub_category": "Smart Phone",
+    "stock_status": "in_stock",
+    "specifications": {
+      "storage": "256GB",
+      "color": "Titanium Gray",
+      "screen_size": "6.9 inches",
+      "camera": "200MP with 10x optical zoom",
+      "os": "Android 15",
+      "processor": "Snapdragon 8 Gen 4",
+      "battery": "5000mAh",
+      "s_pen": "Included",
+      "updates": "5 years"
+    }
+  },
+  {
+    "product_id": "PROD-052",
+    "name": "LG OLED G4 77-inch TV",
+    "description": "Premium 4K OLED TV with MLA technology, α11 AI Processor, and Dolby Vision IQ. Features ultra-bright display and webOS 24.",
+    "price": 3499,
+    "category": "TVs",
+    "sub_category": "OLED TV",
+    "stock_status": "in_stock",
+    "specifications": {
+      "size": "77 inches",
+      "resolution": "4K OLED",
+      "processor": "α11 AI",
+      "smart_platform": "webOS 24",
+      "hdr": "Dolby Vision IQ",
+      "refresh_rate": "120Hz"
+    }
+  },
+  {
+    "product_id": "PROD-053",
+    "name": "Sony A7R V Camera",
+    "description": "High-resolution mirrorless camera with 61MP full-frame sensor, 8K video recording, and advanced AI autofocus. Perfect for professional photography.",
+    "price": 3898,
+    "category": "Cameras",
+    "sub_category": "Mirrorless Camera",
+    "stock_status": "in_stock",
+    "specifications": {
+      "sensor": "61MP Full-Frame",
+      "video": "8K 24fps",
+      "autofocus": "AI Real-time Tracking",
+      "iso_range": "100-32000"
+    }
+  },
+  {
+    "product_id": "PROD-054",
+    "name": "DJI Air 3S Drone",
+    "description": "Advanced drone with dual cameras (4K/60fps), 46-minute flight time, and omnidirectional obstacle sensing. Includes intelligent flight modes.",
+    "price": 1099,
+    "category": "Drones",
+    "sub_category": "Consumer Drone",
+    "stock_status": "in_stock",
+    "specifications": {
+      "video": "4K 60fps",
+      "flight_time": "46 minutes",
+      "obstacle_sensing": "Omnidirectional",
+      "max_speed": "21 m/s",
+      "weight": "720g"
+    }
+  },
+  {
+    "product_id": "PROD-055",
+    "name": "Apple Watch Ultra 3",
+    "description": "Rugged smartwatch with titanium case, dual-frequency GPS, and 36-hour battery life. Features action button and depth gauge.",
+    "price": 799,
+    "category": "Wearables",
+    "sub_category": "Smartwatch",
+    "stock_status": "in_stock",
+    "specifications": {
+      "display": "Always-on Retina",
+      "battery_life": "36 hours",
+      "gps": "Dual-frequency",
+      "os": "watchOS 11",
+      "chip": "S9 SiP",
+      "health_tracking": "Advanced",
+      "case": "Titanium"
+    }
+  },
+  {
+    "product_id": "PROD-056",
+    "name": "Microsoft Surface Laptop 7",
+    "description": "Premium laptop with Snapdragon X Elite processor, 13.8-inch PixelSense touchscreen, and all-day battery life. Features AI acceleration.",
+    "price": 999,
+    "category": "Computers",
+    "sub_category": "Laptop",
+    "stock_status": "in_stock",
+    "specifications": {
+      "processor": "Snapdragon X Elite",
+      "ram": "16GB",
+      "storage": "256GB SSD",
+      "display": "13.8 inches",
+      "os": "Windows 11",
+      "graphics": "Integrated",
+      "battery_life": "All-day"
+    }
+  },
+  {
+    "product_id": "PROD-057",
+    "name": "Nintendo Switch 2",
+    "description": "Next-generation gaming console with enhanced performance, 8-inch OLED display, and backward compatibility. Includes improved Joy-Con controllers.",
+    "price": 399,
+    "category": "Gaming",
+    "sub_category": "Handheld Console",
+    "stock_status": "in_stock",
+    "specifications": {
+      "screen": "8-inch OLED",
+      "storage": "256GB",
+      "controllers": "Enhanced Joy-Con",
+      "backward_compatibility": "Yes"
+    }
+  },
+  {
+    "product_id": "PROD-058",
+    "name": "Xbox Series X Pro",
+    "description": "Enhanced gaming console with improved performance, 2TB SSD, and 4K/120fps gaming support. Includes wireless controller with haptic feedback.",
+    "price": 599,
+    "category": "Gaming",
+    "sub_category": "Gaming Console",
+    "stock_status": "in_stock",
+    "specifications": {
+      "storage": "2TB SSD",
+      "controller": "Enhanced wireless",
+      "resolution": "4K 120fps",
+      "processor": "AMD Zen 2",
+      "ray_tracing": "Yes",
+      "haptic_feedback": "Yes",
+      "upscaling": "No"
+    }
+  },
+  {
+    "product_id": "PROD-059",
+    "name": "PlayStation 5 Pro",
+    "description": "Enhanced gaming console with improved GPU, 2TB SSD, and PlayStation Spectral Super Resolution. Includes DualSense Edge controller.",
+    "price": 699,
+    "category": "Gaming",
+    "sub_category": "Gaming Console",
+    "stock_status": "low_stock",
+    "specifications": {
+      "storage": "2TB SSD",
+      "controller": "DualSense Edge",
+      "resolution": "4K",
+      "processor": "AMD Zen 2",
+      "ray_tracing": "Yes",
+      "upscaling": "PSSR"
+    }
+  },
+  {
+    "product_id": "PROD-060",
+    "name": "Tesla Model 3 Accessories Bundle",
+    "description": "Premium accessories bundle including all-weather floor mats, center console organizer, and wireless charging pad. Perfect for Tesla Model 3 owners.",
+    "price": 299,
+    "category": "Accessories",
+    "sub_category": "Car Accessories",
+    "stock_status": "in_stock",
+    "specifications": {
+      "compatibility": "Tesla Model 3",
+      "items": "Floor mats, Organizer, Charging pad",
+      "material": "Premium"
+    }
+  },
+  {
+    "product_id": "PROD-061",
+    "name": "OnePlus 12 Pro",
+    "description": "Flagship Android smartphone with Snapdragon 8 Gen 3, 50MP triple camera system, and 100W fast charging. Features 6.82-inch LTPO AMOLED display.",
+    "price": 899,
+    "category": "Electronics",
+    "sub_category": "Smart Phone",
+    "stock_status": "in_stock",
+    "specifications": {
+      "storage": "256GB",
+      "color": "Silky Black",
+      "screen_size": "6.82 inches",
+      "camera": "50MP triple camera",
+      "os": "Android 14",
+      "processor": "Snapdragon 8 Gen 3",
+      "battery": "5400mAh",
+      "s_pen": "No",
+      "updates": "4 years"
+    }
+  },
+  {
+    "product_id": "PROD-062",
+    "name": "Xiaomi 14 Ultra",
+    "description": "Premium Android smartphone with Snapdragon 8 Gen 3, Leica quad-camera system, and 90W fast charging. Features 6.73-inch AMOLED display.",
+    "price": 1099,
+    "category": "Electronics",
+    "sub_category": "Smart Phone",
+    "stock_status": "in_stock",
+    "specifications": {
+      "storage": "512GB",
+      "color": "Black",
+      "screen_size": "6.73 inches",
+      "camera": "50MP Leica quad-camera",
+      "os": "Android 14",
+      "processor": "Snapdragon 8 Gen 3",
+      "battery": "5300mAh",
+      "s_pen": "No",
+      "updates": "4 years"
+    }
+  },
+  {
+    "product_id": "PROD-063",
+    "name": "ASUS ROG Zephyrus G16",
+    "description": "Gaming laptop with Intel Core i9, NVIDIA RTX 4080, and 16-inch QHD display. Features advanced cooling and RGB keyboard.",
+    "price": 2299,
+    "category": "Computers",
+    "sub_category": "Laptop",
+    "stock_status": "in_stock",
+    "specifications": {
+      "processor": "Intel Core i9-13900H",
+      "ram": "32GB",
+      "storage": "1TB SSD",
+      "display": "16 inches QHD",
+      "os": "Windows 11",
+      "graphics": "NVIDIA RTX 4080",
+      "battery_life": "Up to 6 hours"
+    }
+  },
+  {
+    "product_id": "PROD-064",
+    "name": "HP Spectre x360 16",
+    "description": "Premium 2-in-1 laptop with Intel Core i7, OLED touchscreen, and stylus support. Perfect for creative professionals.",
+    "price": 1599,
+    "category": "Computers",
+    "sub_category": "Laptop",
+    "stock_status": "in_stock",
+    "specifications": {
+      "processor": "Intel Core i7-13700H",
+      "ram": "16GB",
+      "storage": "512GB SSD",
+      "display": "16 inches OLED",
+      "os": "Windows 11",
+      "battery_life": "Up to 17 hours"
+    }
+  },
+  {
+    "product_id": "PROD-065",
+    "name": "Microsoft Surface Pro 10",
+    "description": "Versatile 2-in-1 tablet with Intel Core i7, 13-inch PixelSense display, and Surface Pen support. Detachable keyboard included.",
+    "price": 1299,
+    "category": "Tablets",
+    "sub_category": "Tablet",
+    "stock_status": "in_stock",
+    "specifications": {
+      "processor": "Intel Core i7",
+      "storage": "256GB SSD",
+      "display": "13 inches",
+      "pencil_support": "Yes",
+      "os": "Windows 11"
+    }
+  },
+  {
+    "product_id": "PROD-066",
+    "name": "Lenovo Tab P12 Pro",
+    "description": "Premium Android tablet with Snapdragon 870, 12.6-inch OLED display, and stylus support. Great for productivity and media consumption.",
+    "price": 599,
+    "category": "Tablets",
+    "sub_category": "Tablet",
+    "stock_status": "in_stock",
+    "specifications": {
+      "processor": "Snapdragon 870",
+      "storage": "128GB",
+      "display": "12.6 inches",
+      "pencil_support": "Yes",
+      "os": "Android 12"
+    }
+  },
+  {
+    "product_id": "PROD-067",
+    "name": "Sennheiser Momentum 4 Wireless",
+    "description": "Premium over-ear headphones with adaptive noise cancellation, 60-hour battery life, and exceptional sound quality.",
+    "price": 349,
+    "category": "Audio",
+    "sub_category": "Over-Ear Headphones",
+    "stock_status": "in_stock",
+    "specifications": {
+      "noise_cancellation": "Adaptive ANC",
+      "battery_life": "60 hours",
+      "connectivity": "Bluetooth 5.2",
+      "quick_charge": "3 minutes for 6 hours"
+    }
+  },
+  {
+    "product_id": "PROD-068",
+    "name": "Beats Fit Pro",
+    "description": "Wireless earbuds with active noise cancellation, spatial audio, and secure-fit wingtips. Features Apple H1 chip.",
+    "price": 199,
+    "category": "Audio",
+    "sub_category": "Wireless Earbuds",
+    "stock_status": "in_stock",
+    "specifications": {
+      "noise_cancellation": "Active ANC",
+      "battery_life": "6 hours (24 with case)",
+      "connectivity": "Bluetooth",
+      "chip": "Apple H1",
+      "spatial_audio": "Yes"
+    }
+  },
+  {
+    "product_id": "PROD-069",
+    "name": "Sony WF-1000XM5 Earbuds",
+    "description": "Premium wireless earbuds with industry-leading noise cancellation, 8-hour battery life, and LDAC support.",
+    "price": 299,
+    "category": "Audio",
+    "sub_category": "Wireless Earbuds",
+    "stock_status": "in_stock",
+    "specifications": {
+      "noise_cancellation": "Industry-leading ANC",
+      "battery_life": "8 hours (24 with case)",
+      "connectivity": "Bluetooth 5.3",
+      "audio": "LDAC support"
+    }
+  },
+  {
+    "product_id": "PROD-070",
+    "name": "Bose SoundLink Flex Speaker",
+    "description": "Portable Bluetooth speaker with waterproof design, 12-hour battery life, and PositionIQ technology.",
+    "price": 149,
+    "category": "Audio",
+    "sub_category": "Portable Speaker",
+    "stock_status": "in_stock",
+    "specifications": {
+      "battery_life": "12 hours",
+      "waterproof": "IP67",
+      "connectivity": "Bluetooth",
+      "power": "20W"
+    }
+  },
+  {
+    "product_id": "PROD-071",
+    "name": "Nikon Z8 Camera",
+    "description": "Professional mirrorless camera with 45.7MP full-frame sensor, 8K video recording, and advanced autofocus system.",
+    "price": 3999,
+    "category": "Cameras",
+    "sub_category": "Mirrorless Camera",
+    "stock_status": "in_stock",
+    "specifications": {
+      "sensor": "45.7MP Full-Frame",
+      "video": "8K 30fps",
+      "autofocus": "493-point AF",
+      "iso_range": "64-25600"
+    }
+  },
+  {
+    "product_id": "PROD-072",
+    "name": "Fujifilm X-T5 Camera",
+    "description": "APS-C mirrorless camera with 40.2MP sensor, 6.2K video recording, and classic film simulation modes.",
+    "price": 1699,
+    "category": "Cameras",
+    "sub_category": "Mirrorless Camera",
+    "stock_status": "in_stock",
+    "specifications": {
+      "sensor": "40.2MP APS-C",
+      "video": "6.2K 30fps",
+      "autofocus": "425-point hybrid AF",
+      "iso_range": "160-12800"
+    }
+  },
+  {
+    "product_id": "PROD-073",
+    "name": "DJI Mavic 3 Pro Drone",
+    "description": "Professional drone with triple-camera system, 43-minute flight time, and omnidirectional obstacle sensing.",
+    "price": 2199,
+    "category": "Drones",
+    "sub_category": "Consumer Drone",
+    "stock_status": "in_stock",
+    "specifications": {
+      "video": "5.1K 50fps",
+      "flight_time": "43 minutes",
+      "obstacle_sensing": "Omnidirectional",
+      "max_speed": "19 m/s",
+      "weight": "958g"
+    }
+  },
+  {
+    "product_id": "PROD-074",
+    "name": "Autel EVO Lite+ Drone",
+    "description": "Advanced drone with 6K camera, 40-minute flight time, and obstacle avoidance system.",
+    "price": 1299,
+    "category": "Drones",
+    "sub_category": "Consumer Drone",
+    "stock_status": "in_stock",
+    "specifications": {
+      "video": "6K 30fps",
+      "flight_time": "40 minutes",
+      "obstacle_sensing": "360°",
+      "max_speed": "18 m/s",
+      "weight": "835g"
+    }
+  },
+  {
+    "product_id": "PROD-075",
+    "name": "Garmin Fenix 7 Pro",
+    "description": "Premium multisport GPS watch with advanced training metrics, maps, and up to 18 days battery life.",
+    "price": 799,
+    "category": "Wearables",
+    "sub_category": "Sports Watch",
+    "stock_status": "in_stock",
+    "specifications": {
+      "battery_life": "18 days",
+      "gps": "Multi-band GNSS",
+      "music_storage": "Yes",
+      "display": "MIP"
+    }
+  },
+  {
+    "product_id": "PROD-076",
+    "name": "Garmin Venu 3",
+    "description": "Smartwatch with advanced health tracking, GPS, and up to 14 days battery life. Features AMOLED display.",
+    "price": 449,
+    "category": "Wearables",
+    "sub_category": "Smartwatch",
+    "stock_status": "in_stock",
+    "specifications": {
+      "display": "AMOLED",
+      "battery_life": "14 days",
+      "gps": "Yes",
+      "health_tracking": "Advanced",
+      "os": "Garmin OS"
+    }
+  },
+  {
+    "product_id": "PROD-077",
+    "name": "Samsung 85-inch QN90C QLED TV",
+    "description": "Premium 4K QLED TV with Neo Quantum Processor, Object Tracking Sound+, and Tizen OS.",
+    "price": 2999,
+    "category": "TVs",
+    "sub_category": "QLED TV",
+    "stock_status": "in_stock",
+    "specifications": {
+      "size": "85 inches",
+      "resolution": "4K QLED",
+      "smart_platform": "Tizen",
+      "hdr": "HDR10+",
+      "refresh_rate": "120Hz"
+    }
+  },
+  {
+    "product_id": "PROD-078",
+    "name": "Sony A95L 65-inch OLED TV",
+    "description": "Premium 4K OLED TV with Cognitive Processor XR, Acoustic Surface Audio+, and Google TV.",
+    "price": 2499,
+    "category": "TVs",
+    "sub_category": "OLED TV",
+    "stock_status": "in_stock",
+    "specifications": {
+      "size": "65 inches",
+      "resolution": "4K OLED",
+      "smart_platform": "Google TV",
+      "hdr": "Dolby Vision, HDR10",
+      "refresh_rate": "120Hz"
+    }
+  },
+  {
+    "product_id": "PROD-079",
+    "name": "Shark NV752 Navigator Vacuum",
+    "description": "Upright vacuum with Lift-Away technology, HEPA filtration, and powerful suction. Perfect for carpets and hard floors.",
+    "price": 199,
+    "category": "Home",
+    "sub_category": "Vacuum Cleaner",
+    "stock_status": "in_stock",
+    "specifications": {
+      "runtime": "Corded",
+      "filtration": "HEPA",
+      "type": "Upright",
+      "laser_detection": "No",
+      "weight": "13.2 lbs"
+    }
+  },
+  {
+    "product_id": "PROD-080",
+    "name": "Eufy RoboVac X8 Hybrid",
+    "description": "Robot vacuum with dual-turbine system, mapping, and self-emptying base. Features 200-minute runtime.",
+    "price": 599,
+    "category": "Home",
+    "sub_category": "Robot Vacuum",
+    "stock_status": "in_stock",
+    "specifications": {
+      "self_emptying": "Yes",
+      "mapping": "Yes",
+      "runtime": "200 minutes",
+      "obstacle_avoidance": "Yes"
+    }
+  },
+  {
+    "product_id": "PROD-081",
+    "name": "Breville Barista Express",
+    "description": "Espresso machine with built-in grinder, 15-bar pressure, and steam wand. Perfect for coffee enthusiasts.",
+    "price": 699,
+    "category": "Home",
+    "sub_category": "Coffee Machine",
+    "stock_status": "in_stock",
+    "specifications": {
+      "cup_sizes": "Single/Double",
+      "milk_frother": "Steam wand",
+      "technology": "15-bar pressure",
+      "water_tank": "2L"
+    }
+  },
+  {
+    "product_id": "PROD-082",
+    "name": "Cuisinart Stand Mixer",
+    "description": "Professional stand mixer with 12 speeds, tilt-head design, and multiple attachments included.",
+    "price": 299,
+    "category": "Home",
+    "sub_category": "Kitchen Appliance",
+    "stock_status": "in_stock",
+    "specifications": {
+      "speeds": "12",
+      "attachments": "Multiple included",
+      "capacity": "5.5 quart",
+      "power": "500W"
+    }
+  },
+  {
+    "product_id": "PROD-083",
+    "name": "Ninja Foodi Pressure Cooker",
+    "description": "8-in-1 pressure cooker with 10 functions including pressure cooking, air frying, and slow cooking. 8-quart capacity.",
+    "price": 199,
+    "category": "Home",
+    "sub_category": "Pressure Cooker",
+    "stock_status": "in_stock",
+    "specifications": {
+      "functions": "8-in-1",
+      "capacity": "8 quart",
+      "safety": "11 safety features",
+      "pressure_levels": "High and Low"
+    }
+  },
+  {
+    "product_id": "PROD-084",
+    "name": "Brooks Ghost 15 Running Shoes",
+    "description": "Neutral running shoes with DNA Loft v2 cushioning, breathable mesh upper, and durable outsole.",
+    "price": 140,
+    "category": "Footwear",
+    "sub_category": "Running Shoes",
+    "stock_status": "in_stock",
+    "specifications": {
+      "cushioning": "DNA Loft v2",
+      "upper": "Mesh",
+      "sizes": "6-13",
+      "weight": "9.1 oz"
+    }
+  },
+  {
+    "product_id": "PROD-085",
+    "name": "Arc'teryx Beta AR Jacket",
+    "description": "Technical shell jacket with GORE-TEX Pro fabric, fully waterproof and breathable. Features helmet-compatible hood.",
+    "price": 599,
+    "category": "Clothing",
+    "sub_category": "Outerwear",
+    "stock_status": "in_stock",
+    "specifications": {
+      "fabric": "GORE-TEX Pro",
+      "water_resistant": "Fully waterproof",
+      "sizes": "XS-XXL",
+      "hood": "Helmet-compatible"
+    }
+  },
+  {
+    "product_id": "PROD-086",
+    "name": "RTIC 65 Cooler",
+    "description": "Premium hard cooler with 2-inch insulation, bear-resistant certification, and T-latch system. Holds 42 cans.",
+    "price": 249,
+    "category": "Outdoor",
+    "sub_category": "Cooler",
+    "stock_status": "in_stock",
+    "specifications": {
+      "capacity": "42 cans",
+      "insulation": "2 inches",
+      "bear_resistant": "Yes",
+      "weight": "20 lbs"
+    }
+  },
+  {
+    "product_id": "PROD-087",
+    "name": "REI Co-op Half Dome 2 Plus Tent",
+    "description": "Lightweight tent with weatherproof design, large doors, and easy setup. Perfect for backpacking.",
+    "price": 229,
+    "category": "Outdoor",
+    "sub_category": "Tent",
+    "stock_status": "in_stock",
+    "specifications": {
+      "capacity": "2 person",
+      "weatherproof": "Yes",
+      "setup_time": "15 minutes",
+      "weight": "5 lbs 8 oz"
+    }
+  },
+  {
+    "product_id": "PROD-088",
+    "name": "CamelBak Chute Mag Water Bottle",
+    "description": "Insulated stainless steel water bottle with magnetic cap, keeps drinks cold for 24 hours. BPA-free.",
+    "price": 35,
+    "category": "Outdoor",
+    "sub_category": "Water Bottle",
+    "stock_status": "in_stock",
+    "specifications": {
+      "capacity": "32oz",
+      "insulation": "24h cold",
+      "material": "Stainless Steel",
+      "bpa_free": "Yes"
+    }
+  },
+  {
+    "product_id": "PROD-089",
+    "name": "Garmin Vivosmart 5",
+    "description": "Slim fitness tracker with heart rate monitoring, sleep tracking, and 7-day battery life. Water-resistant up to 50m.",
+    "price": 149,
+    "category": "Wearables",
+    "sub_category": "Fitness Tracker",
+    "stock_status": "in_stock",
+    "specifications": {
+      "battery_life": "7 days",
+      "water_resistant": "50m",
+      "tracking": "Heart rate, Sleep, Steps",
+      "display": "OLED"
+    }
+  },
+  {
+    "product_id": "PROD-090",
+    "name": "Razer DeathAdder V3 Pro Mouse",
+    "description": "Wireless gaming mouse with Focus Pro 30K sensor, 90-hour battery life, and ergonomic design.",
+    "price": 149,
+    "category": "Accessories",
+    "sub_category": "Computer Mouse",
+    "stock_status": "in_stock",
+    "specifications": {
+      "battery_life": "90 hours",
+      "tracking": "Focus Pro 30K",
+      "connectivity": "Wireless",
+      "dpi": "30000"
+    }
+  }
+]

@@ -1,0 +1,166 @@
+PROD-091 - Apple Mac Studio M2 Ultra
+Category: Computers
+Sub Category: Desktop Computer
+Price: $3999
+Stock Status: in_stock
+Description: Powerful desktop computer with M2 Ultra chip, 24-core CPU, 76-core GPU, and up to 192GB unified memory. Features multiple Thunderbolt 4 ports, HDMI, and 10Gb Ethernet. Perfect for professional video editing, 3D rendering, and intensive computational work.
+Specifications:
+- Processor: M2 Ultra chip
+- CPU Cores: 24-core
+- GPU Cores: 76-core
+- Memory: 64GB unified memory (upgradeable to 192GB)
+- Storage: 1TB SSD (upgradeable to 8TB)
+- Ports: 6x Thunderbolt 4, 2x USB-A, HDMI, 10Gb Ethernet, 3.5mm headphone jack
+- Dimensions: 7.7 x 7.7 x 3.7 inches
+- Weight: 5.9 lbs
+- OS: macOS Ventura
+
+PROD-092 - Dell XPS Desktop 8960
+Category: Computers
+Sub Category: Desktop Computer
+Price: $1499
+Stock Status: in_stock
+Description: Premium Windows desktop with Intel Core i7-13700 processor, NVIDIA RTX 4060 graphics, and 16GB DDR5 RAM. Features modern design, excellent cooling, and plenty of expansion options. Ideal for gaming, content creation, and productivity.
+Specifications:
+- Processor: Intel Core i7-13700 (16 cores, up to 5.2GHz)
+- Graphics: NVIDIA RTX 4060 (8GB GDDR6)
+- Memory: 16GB DDR5 RAM (upgradeable to 128GB)
+- Storage: 512GB NVMe SSD + 1TB HDD
+- Ports: USB 3.2, USB-C, HDMI, DisplayPort, Ethernet
+- Power Supply: 500W
+- OS: Windows 11 Pro
+- Dimensions: 15.4 x 6.9 x 15.4 inches
+
+PROD-093 - HP Pavilion Desktop TP01-2023
+Category: Computers
+Sub Category: Desktop Computer
+Price: $699
+Stock Status: in_stock
+Description: Affordable desktop computer with AMD Ryzen 5 5600G processor, integrated graphics, and 8GB RAM. Perfect for home office, web browsing, and light productivity tasks. Compact design fits easily on any desk.
+Specifications:
+- Processor: AMD Ryzen 5 5600G (6 cores, up to 4.4GHz)
+- Graphics: Integrated AMD Radeon Graphics
+- Memory: 8GB DDR4 RAM (upgradeable to 32GB)
+- Storage: 256GB NVMe SSD
+- Ports: USB 3.1, USB 2.0, HDMI, VGA, Ethernet
+- Power Supply: 180W
+- OS: Windows 11 Home
+- Dimensions: 13.3 x 6.1 x 11.5 inches
+
+PROD-094 - Lenovo ThinkCentre M90q Tiny
+Category: Computers
+Sub Category: Desktop Computer
+Price: $899
+Stock Status: in_stock
+Description: Ultra-compact desktop computer with Intel Core i5-13500T processor, 16GB RAM, and 512GB SSD. Extremely small footprint perfect for space-constrained environments. Features VESA mount capability and multiple display outputs.
+Specifications:
+- Processor: Intel Core i5-13500T (14 cores, up to 4.6GHz)
+- Graphics: Integrated Intel UHD Graphics 770
+- Memory: 16GB DDR4 RAM
+- Storage: 512GB NVMe SSD
+- Ports: USB 3.2 Gen 2, USB-C, DisplayPort, HDMI, Ethernet
+- Power Supply: 65W external adapter
+- OS: Windows 11 Pro
+- Dimensions: 7.0 x 7.0 x 1.4 inches
+- Weight: 1.3 lbs
+
+PROD-095 - Apple iMac 24-inch M3
+Category: Computers
+Sub Category: Desktop Computer
+Price: $1299
+Stock Status: in_stock
+Description: All-in-one desktop computer with M3 chip, 24-inch 4.5K Retina display, and stunning design in multiple colors. Features 1080p FaceTime HD camera, studio-quality microphones, and six-speaker sound system. Perfect for creative professionals and everyday users.
+Specifications:
+- Processor: M3 chip (8-core CPU, 8-core GPU)
+- Memory: 8GB unified memory (upgradeable to 24GB)
+- Storage: 256GB SSD (upgradeable to 2TB)
+- Display: 24-inch 4.5K Retina (4480 x 2520)
+- Camera: 1080p FaceTime HD
+- Ports: 2x Thunderbolt 4, 2x USB 3, Ethernet, 3.5mm headphone jack
+- Colors: Blue, Green, Pink, Silver, Yellow, Orange, Purple
+- OS: macOS Sonoma
+- Dimensions: 21.5 x 18.1 x 5.8 inches
+
+PROD-096 - Corsair One i300
+Category: Computers
+Sub Category: Desktop Computer
+Price: $3499
+Stock Status: low_stock
+Description: High-performance compact gaming desktop with Intel Core i9-13900K, NVIDIA RTX 4090, and advanced liquid cooling. Premium build quality in a small form factor. Perfect for gamers and content creators who want maximum performance in minimal space.
+Specifications:
+- Processor: Intel Core i9-13900K (24 cores, up to 5.8GHz)
+- Graphics: NVIDIA RTX 4090 (24GB GDDR6X)
+- Memory: 32GB DDR5 RAM
+- Storage: 2TB NVMe SSD
+- Cooling: Custom liquid cooling for CPU and GPU
+- Ports: USB 3.2, USB-C, HDMI, DisplayPort, Ethernet
+- Power Supply: 750W SFX
+- OS: Windows 11 Home
+- Dimensions: 7.9 x 6.7 x 14.9 inches
+- Weight: 14.3 lbs
+
+PROD-097 - ASUS ROG Strix G22CH
+Category: Computers
+Sub Category: Desktop Computer
+Price: $1799
+Stock Status: in_stock
+Description: Gaming desktop with Intel Core i7-13700F, NVIDIA RTX 4070, and RGB lighting. Features compact design, excellent cooling, and pre-configured for optimal gaming performance. Ready to play out of the box.
+Specifications:
+- Processor: Intel Core i7-13700F (16 cores, up to 5.2GHz)
+- Graphics: NVIDIA RTX 4070 (12GB GDDR6X)
+- Memory: 16GB DDR5 RAM
+- Storage: 1TB NVMe SSD
+- Cooling: Air cooling with RGB fans
+- Ports: USB 3.2, USB-C, HDMI, DisplayPort, Ethernet
+- Power Supply: 750W
+- OS: Windows 11 Home
+- Dimensions: 12.0 x 6.5 x 15.0 inches
+
+PROD-098 - Microsoft Surface Studio 2+
+Category: Computers
+Sub Category: Desktop Computer
+Price: $4299
+Stock Status: in_stock
+Description: Premium all-in-one desktop with 28-inch PixelSense touchscreen display, Intel Core i7-11370H, and NVIDIA RTX 4060. Features Surface Pen support and adjustable hinge for drawing and design work. Perfect for creative professionals.
+Specifications:
+- Processor: Intel Core i7-11370H (4 cores, up to 4.8GHz)
+- Graphics: NVIDIA RTX 4060 (8GB GDDR6)
+- Memory: 32GB DDR4 RAM
+- Storage: 1TB NVMe SSD
+- Display: 28-inch PixelSense (4500 x 3000) touchscreen
+- Ports: USB 4, USB-C, USB-A, Ethernet, SD card reader
+- Pen Support: Surface Pen compatible
+- OS: Windows 11 Pro
+- Dimensions: 25.0 x 17.3 x 0.5 inches (screen)
+
+PROD-099 - Alienware Aurora R16
+Category: Computers
+Sub Category: Desktop Computer
+Price: $1999
+Stock Status: in_stock
+Description: Gaming desktop with Intel Core i7-13700F, NVIDIA RTX 4070 Ti, and Alienware's signature design. Features advanced thermal management, customizable RGB lighting, and excellent upgradeability. Built for serious gamers.
+Specifications:
+- Processor: Intel Core i7-13700F (16 cores, up to 5.2GHz)
+- Graphics: NVIDIA RTX 4070 Ti (12GB GDDR6X)
+- Memory: 32GB DDR5 RAM
+- Storage: 1TB NVMe SSD + 1TB HDD
+- Cooling: Liquid cooling for CPU, air cooling for system
+- Ports: USB 3.2, USB-C, HDMI, DisplayPort, Ethernet
+- Power Supply: 750W
+- OS: Windows 11 Home
+- Dimensions: 16.7 x 8.9 x 18.4 inches
+
+PROD-100 - Framework Laptop 16 Desktop Kit
+Category: Computers
+Sub Category: Desktop Computer
+Price: $999
+Stock Status: in_stock
+Description: Modular desktop conversion kit that transforms Framework Laptop 16 into a desktop computer. Includes expansion cards, multiple display outputs, and full desktop functionality. Repairable and upgradeable design philosophy.
+Specifications:
+- Compatibility: Framework Laptop 16
+- Expansion Slots: 6x expansion card slots
+- Ports: Multiple USB-C, USB-A, HDMI, DisplayPort, Ethernet (via expansion cards)
+- Display Support: Up to 3 external displays
+- Power: 180W power adapter included
+- Dimensions: Varies based on configuration
+- Upgradeability: Fully modular and repairable
