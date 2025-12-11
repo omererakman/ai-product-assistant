@@ -15,7 +15,10 @@ import {
   DEFAULT_CONFIG,
 } from "../security/index.js";
 import { getDataPath } from "../utils/paths.js";
-import { LANGUAGE_NAMES, type LanguageCode } from "../constants/languages.js";
+import {
+  LANGUAGE_NAMES,
+  type LanguageCode,
+} from "@shared/constants/languages.js";
 
 const db = createDatabase();
 

@@ -2,7 +2,10 @@ import {
   ChatPromptTemplate,
   MessagesPlaceholder,
 } from "@langchain/core/prompts";
-import { LANGUAGE_NAMES, type LanguageCode } from "../constants/languages.js";
+import {
+  LANGUAGE_NAMES,
+  type LanguageCode,
+} from "@shared/constants/languages.js";
 
 export const ragPrompt = ChatPromptTemplate.fromMessages([
   [

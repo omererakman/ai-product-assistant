@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { useAudioRecorder } from "../hooks/useAudioRecorder";
 import { useWhisperTranscription } from "../hooks/useWhisperTranscription";
 import "./VoiceInput.css";

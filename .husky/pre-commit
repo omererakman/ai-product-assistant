@@ -23,3 +23,7 @@ npm run lint || exit 1
 # Run prettier check
 echo "💅 Running Prettier check..."
 npm run format:check || exit 1
+
+# Run build
+echo "🔨 Running build..."
+npm run build || exit 1

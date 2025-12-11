@@ -558,6 +558,12 @@ export function useContinuousVoiceConversation(
           agent?: string;
           orderCreated?: boolean;
           orderId?: string;
+          sources?: Array<{
+            id: string;
+            text: string;
+            sourceId: string;
+            metadata: Record<string, unknown>;
+          }>;
         } | null = null;
         let ttsTriggered = false; // Track if TTS has been triggered
 
@@ -609,6 +615,7 @@ export function useContinuousVoiceConversation(
                     agent: data.agent,
                     orderCreated: data.orderCreated,
                     orderId: data.orderId,
+                    sources: data.sources,
                   };
                   if (
                     fullResponse.trim() &&

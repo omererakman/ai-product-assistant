@@ -17,7 +17,11 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["../shared/src/*"]
+    }
   },
   "include": ["src/**/*", "scripts/**/*"],
   "exclude": ["node_modules", "dist"]

@@ -84,22 +84,22 @@ export function useAudioRecorder(options: UseAudioRecorderOptions = {}) {
               "Microphone permission denied. Please allow microphone access and try again.",
             );
           } else if (
-            err.name === "NotFoundError" ||
-            err.name === "DevicesNotFoundError"
+            error.name === "NotFoundError" ||
+            error.name === "DevicesNotFoundError"
           ) {
             throw new Error(
               "No microphone found. Please connect a microphone and try again.",
             );
           } else if (
-            err.name === "NotReadableError" ||
-            err.name === "TrackStartError"
+            error.name === "NotReadableError" ||
+            error.name === "TrackStartError"
           ) {
             throw new Error(
               "Microphone is already in use by another application.",
             );
           } else {
             throw new Error(
-              `Failed to access microphone: ${err.message || "Unknown error"}`,
+              `Failed to access microphone: ${error.message || "Unknown error"}`,
             );
           }
         }

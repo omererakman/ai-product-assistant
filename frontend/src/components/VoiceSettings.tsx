@@ -1,6 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { LANGUAGE_OPTIONS, type LanguageCode } from "../constants/languages";
+import {
+  LANGUAGE_OPTIONS,
+  type LanguageCode,
+} from "@shared/constants/languages";
 import "./VoiceSettings.css";
 
 export type TTSVoice = "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer";

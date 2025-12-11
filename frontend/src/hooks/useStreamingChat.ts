@@ -44,9 +44,10 @@ export function useStreamingChat(options: UseStreamingChatOptions) {
   const { sessionId, language, onComplete, onError } = options;
 
   const [streamingText, setStreamingText] = useState("");
-  const [metadata, setMetadata] = useState<
-    StreamingChatChunk["metadata"] | null
-  >(null);
+  const [metadata, setMetadata] = useState<Pick<
+    StreamingChatChunk,
+    "agent" | "sources" | "orderCreated" | "orderId" | "productList"
+  > | null>(null);
   const [isStreaming, setIsStreaming] = useState(false);
 
   const abortControllerRef = useRef<AbortController | null>(null);

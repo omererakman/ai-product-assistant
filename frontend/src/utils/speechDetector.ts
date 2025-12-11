@@ -1,4 +1,5 @@
-import Meyda, { MeydaAudioFeature } from "meyda";
+import Meyda from "meyda";
+import type { MeydaAudioFeature } from "meyda";
 
 export interface SpeechDetectionResult {
   isSpeech: boolean;
@@ -29,21 +30,16 @@ export interface SpeechFrequencyBands {
 
 export class SpeechDetector {
   private extractor: ReturnType<typeof Meyda.createMeydaAnalyzer> | null = null;
-  private audioContext: AudioContext;
-  private analyser: AnalyserNode;
-  private sampleRate: number;
   private frameSkip = 3; // Analyze every 3rd frame for performance
   private frameCount = 0;
   private lastResult: SpeechDetectionResult | null = null;
 
   constructor(
     audioContext: AudioContext,
-    analyser: AnalyserNode,
+    _analyser: AnalyserNode,
     source: AudioNode,
   ) {
-    this.audioContext = audioContext;
-    this.analyser = analyser;
-    this.sampleRate = audioContext.sampleRate;
+    // analyser parameter kept for API compatibility but not stored
 
     // Initialize Meyda extractor
     try {
