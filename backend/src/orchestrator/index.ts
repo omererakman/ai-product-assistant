@@ -69,8 +69,9 @@ export class Orchestrator {
     );
 
     const recentHistory = history.slice(-3).map((m) => m.content.toLowerCase());
-    const hasConfirmation = recentHistory.some((h) =>
-      h.includes("yes") || h.includes("confirm") || h.includes("proceed"),
+    const hasConfirmation = recentHistory.some(
+      (h) =>
+        h.includes("yes") || h.includes("confirm") || h.includes("proceed"),
     );
 
     return hasOrderKeyword || hasConfirmation;
@@ -79,10 +80,37 @@ export class Orchestrator {
   async processMessage(
     message: string,
     language?: string,
-    langfuseTrace?: any
+    langfuseTrace?: {
+      span?: (options: {
+        name: string;
+        metadata?: Record<string, unknown>;
+      }) => {
+        update?: (options: { metadata?: Record<string, unknown> }) => void;
+        end?: (options?: {
+          output?: unknown;
+          metadata?: Record<string, unknown>;
+        }) => void;
+        span?: (options: {
+          name: string;
+          metadata?: Record<string, unknown>;
+        }) => {
+          update?: (options: { metadata?: Record<string, unknown> }) => void;
+          end?: (options?: {
+            output?: unknown;
+            metadata?: Record<string, unknown>;
+          }) => void;
+        };
+      };
+      generation?: (options: {
+        name: string;
+        model?: string;
+        modelParameters?: Record<string, unknown>;
+        input?: Record<string, unknown>;
+      }) => { end?: (options?: { output?: unknown; usage?: unknown }) => void };
+    },
   ): Promise<OrchestratorResponse> {
     const startTime = Date.now();
-    const orchestratorSpan = langfuseTrace?.span({
+    const orchestratorSpan = langfuseTrace?.span?.({
       name: "orchestrator",
       metadata: {
         messageLength: message.length,
@@ -98,11 +126,11 @@ export class Orchestrator {
       timestamp: new Date().toISOString(),
     });
 
-    const intentDetectionSpan = orchestratorSpan?.span({
+    const intentDetectionSpan = orchestratorSpan?.span?.({
       name: "intent-detection",
     });
     const hasOrderIntent = this.detectOrderIntent(message, this.chatHistory);
-    intentDetectionSpan?.end({
+    intentDetectionSpan?.end?.({
       metadata: {
         hasOrderIntent,
         detectedAgent: hasOrderIntent ? "order" : "rag",
@@ -111,8 +139,8 @@ export class Orchestrator {
 
     if (hasOrderIntent) {
       logger.info("Order intent detected, routing to Order Agent");
-      
-      const orderAgentSpan = orchestratorSpan?.span({
+
+      const orderAgentSpan = orchestratorSpan?.span?.({
         name: "order-agent",
       });
 
@@ -122,7 +150,7 @@ export class Orchestrator {
         language,
       );
 
-      orderAgentSpan?.end({
+      orderAgentSpan?.end?.({
         metadata: {
           orderCreated: orderResponse.orderCreated,
           orderId: orderResponse.orderId,
@@ -140,7 +168,7 @@ export class Orchestrator {
         },
       });
 
-      orchestratorSpan?.end({
+      orchestratorSpan?.end?.({
         metadata: {
           agent: "order",
           latency: Date.now() - startTime,
@@ -155,8 +183,8 @@ export class Orchestrator {
       };
     } else {
       logger.info("Product query detected, routing to RAG Agent");
-      
-      const ragAgentSpan = orchestratorSpan?.span({
+
+      const ragAgentSpan = orchestratorSpan?.span?.({
         name: "rag-agent",
       });
 
@@ -166,7 +194,7 @@ export class Orchestrator {
         language,
       );
 
-      ragAgentSpan?.end({
+      ragAgentSpan?.end?.({
         metadata: {
           sourcesCount: ragResponse.sources?.length || 0,
           responseLength: ragResponse.answer.length,
@@ -183,7 +211,7 @@ export class Orchestrator {
         },
       });
 
-      orchestratorSpan?.end({
+      orchestratorSpan?.end?.({
         metadata: {
           agent: "rag",
           latency: Date.now() - startTime,
@@ -210,11 +238,42 @@ export class Orchestrator {
   async processMessageStream(
     message: string,
     language: string | undefined,
-    onToken: (chunk: { type: string; content?: string; [key: string]: unknown }) => void,
-    langfuseTrace?: any
+    onToken: (chunk: {
+      type: string;
+      content?: string;
+      [key: string]: unknown;
+    }) => void,
+    langfuseTrace?: {
+      span?: (options: {
+        name: string;
+        metadata?: Record<string, unknown>;
+      }) => {
+        update?: (options: { metadata?: Record<string, unknown> }) => void;
+        end?: (options?: {
+          output?: unknown;
+          metadata?: Record<string, unknown>;
+        }) => void;
+        span?: (options: {
+          name: string;
+          metadata?: Record<string, unknown>;
+        }) => {
+          update?: (options: { metadata?: Record<string, unknown> }) => void;
+          end?: (options?: {
+            output?: unknown;
+            metadata?: Record<string, unknown>;
+          }) => void;
+        };
+      };
+      generation?: (options: {
+        name: string;
+        model?: string;
+        modelParameters?: Record<string, unknown>;
+        input?: Record<string, unknown>;
+      }) => { end?: (options?: { output?: unknown; usage?: unknown }) => void };
+    },
   ): Promise<OrchestratorResponse> {
     const startTime = Date.now();
-    const orchestratorSpan = langfuseTrace?.span({
+    const orchestratorSpan = langfuseTrace?.span?.({
       name: "orchestrator-stream",
       metadata: {
         messageLength: message.length,
@@ -222,7 +281,10 @@ export class Orchestrator {
       },
     });
 
-    logger.debug({ message: message.substring(0, 100) }, "Processing message with streaming");
+    logger.debug(
+      { message: message.substring(0, 100) },
+      "Processing message with streaming",
+    );
 
     this.chatHistory.push({
       role: "user",
@@ -235,7 +297,7 @@ export class Orchestrator {
     if (hasOrderIntent) {
       logger.debug("Order intent detected, routing to Order Agent (streaming)");
 
-      const orderAgentSpan = orchestratorSpan?.span({
+      const orderAgentSpan = orchestratorSpan?.span?.({
         name: "order-agent-stream",
       });
 
@@ -245,10 +307,10 @@ export class Orchestrator {
         language,
         (token: string) => {
           onToken({ type: "token", content: token });
-        }
+        },
       );
 
-      orderAgentSpan?.end({
+      orderAgentSpan?.end?.({
         metadata: {
           orderCreated: orderResponse.orderCreated,
           orderId: orderResponse.orderId,
@@ -274,7 +336,7 @@ export class Orchestrator {
         productList: orderResponse.productList,
       });
 
-      orchestratorSpan?.end({
+      orchestratorSpan?.end?.({
         metadata: {
           agent: "order",
           latency: Date.now() - startTime,
@@ -290,7 +352,7 @@ export class Orchestrator {
     } else {
       logger.debug("Product query detected, routing to RAG Agent (streaming)");
 
-      const ragAgentSpan = orchestratorSpan?.span({
+      const ragAgentSpan = orchestratorSpan?.span?.({
         name: "rag-agent-stream",
       });
 
@@ -300,10 +362,10 @@ export class Orchestrator {
         language,
         (token: string) => {
           onToken({ type: "token", content: token });
-        }
+        },
       );
 
-      ragAgentSpan?.end({
+      ragAgentSpan?.end?.({
         metadata: {
           sourcesCount: ragResponse.sources?.length || 0,
           responseLength: ragResponse.answer.length,
@@ -327,7 +389,7 @@ export class Orchestrator {
         productList: ragResponse.productList,
       });
 
-      orchestratorSpan?.end({
+      orchestratorSpan?.end?.({
         metadata: {
           agent: "rag",
           latency: Date.now() - startTime,

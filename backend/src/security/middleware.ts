@@ -1,9 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import { logger } from "../logger.js";
-import { sanitizeInput, detectPromptInjection, DEFAULT_CONFIG } from "./guardrails.js";
+import {
+  sanitizeInput,
+  detectPromptInjection,
+  DEFAULT_CONFIG,
+} from "./guardrails.js";
 
 class RateLimiter {
-  private requests: Map<string, { count: number; resetTime: number }> = new Map();
+  private requests: Map<string, { count: number; resetTime: number }> =
+    new Map();
   private windowMs: number;
   private maxRequests: number;
 
@@ -12,7 +17,11 @@ class RateLimiter {
     this.maxRequests = maxRequests;
   }
 
-  check(identifier: string): { allowed: boolean; remaining: number; resetTime: number } {
+  check(identifier: string): {
+    allowed: boolean;
+    remaining: number;
+    resetTime: number;
+  } {
     const now = Date.now();
     const record = this.requests.get(identifier);
 
@@ -67,7 +76,7 @@ function getClientId(req: Request): string {
 
 export function rateLimitMiddleware(
   limiter: RateLimiter,
-  endpointName: string
+  endpointName: string,
 ) {
   return (req: Request, res: Response, next: NextFunction): void => {
     const clientId = getClientId(req);
@@ -76,7 +85,10 @@ export function rateLimitMiddleware(
     // Set rate limit headers
     res.setHeader("X-RateLimit-Limit", limiter["maxRequests"]);
     res.setHeader("X-RateLimit-Remaining", result.remaining);
-    res.setHeader("X-RateLimit-Reset", new Date(result.resetTime).toISOString());
+    res.setHeader(
+      "X-RateLimit-Reset",
+      new Date(result.resetTime).toISOString(),
+    );
 
     if (!result.allowed) {
       logger.warn(
@@ -85,7 +97,7 @@ export function rateLimitMiddleware(
           endpoint: endpointName,
           resetTime: new Date(result.resetTime).toISOString(),
         },
-        "Rate limit exceeded"
+        "Rate limit exceeded",
       );
       res.status(429).json({
         error: "Rate limit exceeded",
@@ -101,7 +113,7 @@ export function rateLimitMiddleware(
 
 export function inputValidationMiddleware(
   maxLength: number = DEFAULT_CONFIG.maxInputLength,
-  fieldName: string = "message"
+  fieldName: string = "message",
 ) {
   return (req: Request, res: Response, next: NextFunction): void => {
     const input = req.body[fieldName];
@@ -126,7 +138,7 @@ export function inputValidationMiddleware(
           maxLength,
           fieldName,
         },
-        "Input exceeds maximum length"
+        "Input exceeds maximum length",
       );
       res.status(400).json({
         error: "Input too long",
@@ -145,7 +157,7 @@ export function inputValidationMiddleware(
           detectedPatterns: injectionCheck.detectedPatterns,
           clientId: getClientId(req),
         },
-        "Prompt injection detected in request"
+        "Prompt injection detected in request",
       );
       // Log but don't block - let guardrails handle it
       // In production, you might want to block here
@@ -159,7 +171,7 @@ export function inputValidationMiddleware(
           warnings: sanitization.warnings,
           fieldName,
         },
-        "Input sanitization warnings"
+        "Input sanitization warnings",
       );
     }
 
@@ -181,7 +193,7 @@ export function requestSizeLimitMiddleware(maxSizeBytes: number = 1024 * 1024) {
           maxSizeBytes,
           endpoint: req.path,
         },
-        "Request size exceeds limit"
+        "Request size exceeds limit",
       );
       res.status(413).json({
         error: "Request too large",
@@ -195,7 +207,11 @@ export function requestSizeLimitMiddleware(maxSizeBytes: number = 1024 * 1024) {
   };
 }
 
-export function sessionValidationMiddleware(req: Request, res: Response, next: NextFunction): void {
+export function sessionValidationMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
   const sessionId = req.headers["x-session-id"] as string | undefined;
 
   if (sessionId) {
@@ -206,7 +222,7 @@ export function sessionValidationMiddleware(req: Request, res: Response, next: N
           sessionId: sessionId.substring(0, 20),
           endpoint: req.path,
         },
-        "Invalid session ID format"
+        "Invalid session ID format",
       );
       res.status(400).json({
         error: "Invalid session ID",
@@ -219,7 +235,11 @@ export function sessionValidationMiddleware(req: Request, res: Response, next: N
   next();
 }
 
-export function securityHeadersMiddleware(_req: Request, res: Response, next: NextFunction): void {
+export function securityHeadersMiddleware(
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
   // Set security headers
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("X-Frame-Options", "DENY");
@@ -229,7 +249,7 @@ export function securityHeadersMiddleware(_req: Request, res: Response, next: Ne
   // Content Security Policy (adjust based on your needs)
   res.setHeader(
     "Content-Security-Policy",
-    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
+    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'",
   );
 
   next();

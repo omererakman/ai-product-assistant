@@ -18,9 +18,12 @@
     "dev:build-index": "npm run build-index --workspace=backend",
     "test": "vitest --run",
     "test:watch": "vitest",
-    "lint": "eslint backend/src frontend/src --ext .ts,.tsx",
+    "test:e2e": "vitest --run --config vitest.e2e.config.ts",
+    "lint": "eslint backend/src frontend/src",
     "format": "prettier --write \"backend/**/*.ts\" \"frontend/src/**/*.{ts,tsx}\"",
-    "typecheck": "npm run typecheck --workspace=backend"
+    "format:check": "prettier --check \"backend/**/*.ts\" \"frontend/src/**/*.{ts,tsx}\"",
+    "typecheck": "npm run typecheck --workspace=backend",
+    "prepare": "husky"
   },
   "keywords": [
     "rag",
@@ -33,12 +36,16 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@eslint/js": "^9.39.1",
     "@types/form-data": "^2.2.1",
     "axios": "^1.13.2",
     "concurrently": "^9.1.2",
     "eslint": "^9.39.1",
     "form-data": "^4.0.5",
+    "globals": "^16.5.0",
+    "husky": "^9.1.7",
     "prettier": "^3.6.2",
+    "typescript-eslint": "^8.46.4",
     "vitest": "^4.0.8"
   }
 }

@@ -7,13 +7,13 @@ import { readFileSync, createReadStream } from "fs";
 import { join } from "path";
 import axios from "axios";
 import FormData from "form-data";
-import { formatWER, formatAccuracy } from "../../backend/src/utils/wer.js";
+import { formatWER, formatAccuracy } from "../../src/utils/wer.js";
 import {
   uploadTestCasesToDataset,
   batchEvaluate,
   generateEvaluationReport,
   type GoldenTestCase,
-} from "../../backend/src/utils/langfuseDataset.js";
+} from "../../src/utils/langfuseDataset.js";
 
 // Load golden test cases
 const testCasesPath = join(process.cwd(), "tests/audio/golden-test-cases.json");
@@ -59,10 +59,16 @@ async function runWEREvaluation() {
   console.log(`Total test cases: ${testCases.length}\n`);
 
   // Upload test cases to Langfuse dataset (if enabled)
-  if (process.env.LANGFUSE_ENABLED === "true" && process.env.LANGFUSE_EVALUATION_ENABLED === "true") {
+  if (
+    process.env.LANGFUSE_ENABLED === "true" &&
+    process.env.LANGFUSE_EVALUATION_ENABLED === "true"
+  ) {
     try {
       console.log("Uploading test cases to Langfuse dataset...");
-      await uploadTestCasesToDataset("audio-transcription-golden-tests", testCases);
+      await uploadTestCasesToDataset(
+        "audio-transcription-golden-tests",
+        testCases,
+      );
       console.log("✓ Test cases uploaded to Langfuse\n");
     } catch (error) {
       console.error("Failed to upload to Langfuse:", error);
@@ -102,19 +108,34 @@ async function runWEREvaluation() {
   console.log("WER EVALUATION REPORT");
   console.log("=".repeat(60));
   console.log(`Total Test Cases: ${report.total}`);
-  console.log(`Passed: ${report.passed} (${((report.passed / report.total) * 100).toFixed(1)}%)`);
-  console.log(`Failed: ${report.failed} (${((report.failed / report.total) * 100).toFixed(1)}%)`);
+  console.log(
+    `Passed: ${report.passed} (${((report.passed / report.total) * 100).toFixed(1)}%)`,
+  );
+  console.log(
+    `Failed: ${report.failed} (${((report.failed / report.total) * 100).toFixed(1)}%)`,
+  );
   console.log(`Average WER: ${formatWER({ wer: report.averageWER } as any)}`);
-  console.log(`Average Accuracy: ${formatAccuracy({ accuracy: report.averageAccuracy } as any)}`);
+  console.log(
+    `Average Accuracy: ${formatAccuracy({ accuracy: report.averageAccuracy } as any)}`,
+  );
   console.log("\nResults by Category:");
   console.log("-".repeat(60));
 
   for (const [category, stats] of Object.entries(report.byCategory)) {
+    const categoryStats = stats as {
+      passed: number;
+      failed: number;
+      averageWER: number;
+    };
     console.log(`\n${category}:`);
-    console.log(`  Passed: ${stats.passed}`);
-    console.log(`  Failed: ${stats.failed}`);
-    console.log(`  Average WER: ${formatWER({ wer: stats.averageWER } as any)}`);
-    console.log(`  Threshold: ${formatWER({ wer: thresholds[category] } as any)}`);
+    console.log(`  Passed: ${categoryStats.passed}`);
+    console.log(`  Failed: ${categoryStats.failed}`);
+    console.log(
+      `  Average WER: ${formatWER({ wer: categoryStats.averageWER } as any)}`,
+    );
+    console.log(
+      `  Threshold: ${formatWER({ wer: thresholds[category] } as any)}`,
+    );
   }
 
   console.log("\n" + "=".repeat(60));

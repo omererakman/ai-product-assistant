@@ -7,8 +7,11 @@ import { getConfig } from "../config/env.js";
 import { logger } from "../logger.js";
 import { loadProductsFromDirectory } from "../loaders/directory-loader.js";
 import { getDataPath } from "../utils/paths.js";
+import { Product } from "../loaders/json-loader.js";
 
-export async function createHybridRetriever(vectorStore: VectorStore): Promise<BaseRetriever> {
+export async function createHybridRetriever(
+  vectorStore: VectorStore,
+): Promise<BaseRetriever> {
   const config = getConfig();
 
   const fetchK = Math.max(config.topK * 2, 10);
@@ -24,7 +27,7 @@ export async function createHybridRetriever(vectorStore: VectorStore): Promise<B
       product.name,
       product.description,
       product.category,
-      (product as any).sub_category || "",
+      (product as Product & { sub_category?: string }).sub_category || "",
       ...Object.values(product.specifications || {}),
     ]
       .filter(Boolean)
@@ -38,7 +41,8 @@ export async function createHybridRetriever(vectorStore: VectorStore): Promise<B
       category: product.category,
       stock_status: product.stock_status,
       os: product.specifications?.os || null,
-      sub_category: (product as any).sub_category || null,
+      sub_category:
+        (product as Product & { sub_category?: string }).sub_category || null,
       sourceId: `product-${product.product_id}`,
     };
 

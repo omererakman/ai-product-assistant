@@ -1,17 +1,17 @@
-import { useState, useRef, useEffect } from 'react';
-import './App.css';
-import { VoiceInput } from './components/VoiceInput';
-import { VoiceOutput } from './components/VoiceOutput';
-import { TurnTakingIndicator } from './components/TurnTakingIndicator';
-import { VoiceSettings } from './components/VoiceSettings';
-import { Orders } from './components/Orders';
-import type { TTSVoice } from './components/VoiceSettings';
-import type { LanguageCode } from './constants/languages';
-import { useContinuousVoiceConversation } from './hooks/useContinuousVoiceConversation';
-import { useStreamingChat } from './hooks/useStreamingChat';
+import { useState, useRef, useEffect } from "react";
+import "./App.css";
+import { VoiceInput } from "./components/VoiceInput";
+import { VoiceOutput } from "./components/VoiceOutput";
+import { TurnTakingIndicator } from "./components/TurnTakingIndicator";
+import { VoiceSettings } from "./components/VoiceSettings";
+import { Orders } from "./components/Orders";
+import type { TTSVoice } from "./components/VoiceSettings";
+import type { LanguageCode } from "./constants/languages";
+import { useContinuousVoiceConversation } from "./hooks/useContinuousVoiceConversation";
+import { useStreamingChat } from "./hooks/useStreamingChat";
 
 interface Message {
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
   timestamp?: string;
   orderId?: string;
@@ -23,34 +23,33 @@ interface Message {
   }>;
 }
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 function App() {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [sessionId] = useState(() => `session-${Date.now()}`);
-  const [view, setView] = useState<'chat' | 'orders'>('chat');
+  const [view, setView] = useState<"chat" | "orders">("chat");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  
+
   // Language and voice settings state - declared early so it can be used in hooks
   const [useNaturalTTS, setUseNaturalTTS] = useState(true);
-  const [ttsVoice, setTtsVoice] = useState<TTSVoice>('nova');
+  const [ttsVoice, setTtsVoice] = useState<TTSVoice>("nova");
   const [ttsRate, setTtsRate] = useState(1.0);
-  const [language, setLanguage] = useState<LanguageCode>('en');
+  const [language, setLanguage] = useState<LanguageCode>("en");
   const [naturalTTSSupported, setNaturalTTSSupported] = useState(false);
-  
+
   const {
     streamingText,
     isStreaming,
     sendMessage: sendStreamingMessage,
-    cancel: cancelStreaming,
   } = useStreamingChat({
     sessionId,
     language,
     onComplete: (response) => {
       const assistantMessage: Message = {
-        role: 'assistant',
+        role: "assistant",
         content: response.text,
         timestamp: new Date().toISOString(),
         orderId: response.orderId,
@@ -60,9 +59,9 @@ function App() {
       setLoading(false);
     },
     onError: (error) => {
-      console.error('Streaming chat error:', error);
+      console.error("Streaming chat error:", error);
       const errorMessage: Message = {
-        role: 'assistant',
+        role: "assistant",
         content: `Sorry, I encountered an error: ${error.message}. Please try again.`,
         timestamp: new Date().toISOString(),
       };
@@ -70,26 +69,33 @@ function App() {
       setLoading(false);
     },
   });
-  
+
   useEffect(() => {
     fetch(`${API_URL}/api/tts/health`)
       .then((res) => {
         if (res.ok) {
           setNaturalTTSSupported(true);
           setUseNaturalTTS(true);
-          console.log('✅ Natural TTS backend is available - using OpenAI TTS for natural voice');
+          console.log(
+            "✅ Natural TTS backend is available - using OpenAI TTS for natural voice",
+          );
         } else {
           setNaturalTTSSupported(false);
-          console.warn('⚠️ Natural TTS health check failed - using browser TTS');
+          console.warn(
+            "⚠️ Natural TTS health check failed - using browser TTS",
+          );
         }
       })
       .catch((error) => {
         setNaturalTTSSupported(false);
         setUseNaturalTTS(false);
-        console.warn('⚠️ Natural TTS backend not available - using browser TTS:', error);
+        console.warn(
+          "⚠️ Natural TTS backend not available - using browser TTS:",
+          error,
+        );
       });
   }, []);
-  
+
   const {
     isActive: isVoiceConversationActive,
     isProcessing: isVoiceProcessing,
@@ -117,9 +123,9 @@ function App() {
       setMessages((prev) => [...prev, newMessage]);
     },
     onError: (error) => {
-      console.error('Voice conversation error:', error);
+      console.error("Voice conversation error:", error);
       const errorMessage: Message = {
-        role: 'assistant',
+        role: "assistant",
         content: `Sorry, I encountered an error: ${error.message}. Please try again.`,
         timestamp: new Date().toISOString(),
       };
@@ -128,7 +134,7 @@ function App() {
   });
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -137,29 +143,29 @@ function App() {
 
   const sendMessage = async () => {
     if (!input.trim() || loading || isStreaming) {
-    return;
-  }
+      return;
+    }
 
     const userMessage: Message = {
-      role: 'user',
+      role: "user",
       content: input.trim(),
       timestamp: new Date().toISOString(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
     const messageToSend = input.trim();
-    setInput('');
+    setInput("");
     setLoading(true);
 
     try {
       await sendStreamingMessage(messageToSend);
-    } catch (error) {
+    } catch {
       setLoading(false);
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
@@ -171,7 +177,7 @@ function App() {
     }
 
     const userMessage: Message = {
-      role: 'user',
+      role: "user",
       content: transcript,
       timestamp: new Date().toISOString(),
     };
@@ -181,9 +187,9 @@ function App() {
 
     try {
       const response = await fetch(`${API_URL}/api/chat`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           message: transcript,
@@ -193,12 +199,12 @@ function App() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to send message');
+        throw new Error("Failed to send message");
       }
 
       const data = await response.json();
       const assistantMessage: Message = {
-        role: 'assistant',
+        role: "assistant",
         content: data.response,
         timestamp: data.timestamp,
         orderId: data.orderId,
@@ -207,10 +213,10 @@ function App() {
 
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error("Error sending message:", error);
       const errorMessage: Message = {
-        role: 'assistant',
-        content: 'Sorry, I encountered an error. Please try again.',
+        role: "assistant",
+        content: "Sorry, I encountered an error. Please try again.",
         timestamp: new Date().toISOString(),
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -222,16 +228,16 @@ function App() {
   const clearChat = async () => {
     try {
       await fetch(`${API_URL}/api/chat/history/${sessionId}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
       setMessages([]);
     } catch (error) {
-      console.error('Error clearing chat:', error);
+      console.error("Error clearing chat:", error);
     }
   };
 
-  if (view === 'orders') {
-    return <Orders onBack={() => setView('chat')} />;
+  if (view === "orders") {
+    return <Orders onBack={() => setView("chat")} />;
   }
 
   return (
@@ -254,21 +260,41 @@ function App() {
           {isVoiceSupported && (
             <>
               <button
-                onClick={isVoiceConversationActive ? stopVoiceConversation : startVoiceConversation}
-                className={`voice-conversation-button ${isVoiceConversationActive ? 'active' : ''}`}
-                aria-label={isVoiceConversationActive ? 'Stop voice conversation' : 'Start voice conversation'}
+                onClick={
+                  isVoiceConversationActive
+                    ? stopVoiceConversation
+                    : startVoiceConversation
+                }
+                className={`voice-conversation-button ${isVoiceConversationActive ? "active" : ""}`}
+                aria-label={
+                  isVoiceConversationActive
+                    ? "Stop voice conversation"
+                    : "Start voice conversation"
+                }
                 disabled={loading && !isVoiceConversationActive}
               >
                 {isVoiceConversationActive ? (
                   <>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
                       <rect x="6" y="6" width="12" height="12" rx="2" />
                     </svg>
                     <span>Stop Voice</span>
                   </>
                 ) : (
                   <>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
                       <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
                       <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
                       <line x1="12" y1="19" x2="12" y2="23" />
@@ -281,15 +307,26 @@ function App() {
               <span className="header-separator">|</span>
             </>
           )}
-          <button onClick={clearChat} className="clear-button" aria-label="Clear chat history">
+          <button
+            onClick={clearChat}
+            className="clear-button"
+            aria-label="Clear chat history"
+          >
             Clear Chat
           </button>
           <button
-            onClick={() => setView('orders')}
+            onClick={() => setView("orders")}
             className="orders-button"
             aria-label="View orders"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
               <line x1="3" y1="6" x2="21" y2="6" />
               <path d="M16 10a4 4 0 0 1-8 0" />
@@ -311,7 +348,13 @@ function App() {
                 <li>Process orders when you're ready to buy</li>
               </ul>
               <p>Try asking: "What's the price of the iPhone 15 Pro?"</p>
-              <p style={{ marginTop: '0.75rem', fontSize: '0.875rem', opacity: 0.75 }}>
+              <p
+                style={{
+                  marginTop: "0.75rem",
+                  fontSize: "0.875rem",
+                  opacity: 0.75,
+                }}
+              >
                 💡 Tip: Switch to Voice mode to speak your questions!
               </p>
             </div>
@@ -320,11 +363,11 @@ function App() {
           {messages.map((message, index) => (
             <div
               key={index}
-              className={`message ${message.role === 'user' ? 'user-message' : 'assistant-message'}`}
+              className={`message ${message.role === "user" ? "user-message" : "assistant-message"}`}
             >
               <div className="message-content">
                 <div className="message-text">{message.content}</div>
-                {message.role === 'assistant' && !isVoiceConversationActive && (
+                {message.role === "assistant" && !isVoiceConversationActive && (
                   <VoiceOutput text={message.content} autoPlay={false} />
                 )}
                 {message.orderId && (
@@ -348,7 +391,7 @@ function App() {
                 <div className="message-timestamp">
                   {message.timestamp
                     ? new Date(message.timestamp).toLocaleTimeString()
-                    : ''}
+                    : ""}
                 </div>
               </div>
             </div>
@@ -378,19 +421,23 @@ function App() {
                 </div>
                 {isVoiceConversationActive && (
                   <div className="voice-status-indicator">
-                    {voiceState === 'listening' && isVoiceConversationActive && (
+                    {voiceState === "listening" &&
+                      isVoiceConversationActive && (
+                        <span>
+                          <span className="recording-pulse">🎤</span>{" "}
+                          Listening... (speak now)
+                        </span>
+                      )}
+                    {voiceState === "processing" && (
                       <span>
-                        <span className="recording-pulse">🎤</span> Listening... (speak now)
+                        <span className="transcribing-spinner-small">⏳</span>{" "}
+                        Processing...
                       </span>
                     )}
-                    {voiceState === 'processing' && (
+                    {voiceState === "speaking" && (
                       <span>
-                        <span className="transcribing-spinner-small">⏳</span> Processing...
-                      </span>
-                    )}
-                    {voiceState === 'speaking' && (
-                      <span>
-                        <span className="speaking-pulse">🔊</span> Speaking response...
+                        <span className="speaking-pulse">🔊</span> Speaking
+                        response...
                       </span>
                     )}
                   </div>
@@ -401,30 +448,39 @@ function App() {
 
           {isVoiceConversationActive && (
             <>
-              <TurnTakingIndicator 
-                state={voiceState}
-              />
+              <TurnTakingIndicator state={voiceState} />
               <div className="voice-conversation-status">
                 <div className="voice-status-badge">
                   <div className="pulse-dot"></div>
                   <span>
-                    {voiceState === 'listening' && isVoiceRecording && '🎤 Listening - Speak now (auto-stops after silence)'}
-                    {voiceState === 'listening' && !isVoiceRecording && '⏳ Waiting for microphone...'}
-                    {voiceState === 'processing' && '⏳ Processing...'}
-                   {voiceState === 'speaking' && (
-                     <>
-                       🔊 Speaking response...
-                       {useNaturalTTS && naturalTTSSupported ? (
-                         <span className="tts-badge natural"> 🎤 Natural Voice (OpenAI)</span>
-                       ) : (
-                         <span className="tts-badge browser"> ⚠️ Browser TTS (Robotic)</span>
-                       )}
-                     </>
-                   )}
-                    {voiceState === 'idle' && 'Voice conversation active - Speak naturally'}
+                    {voiceState === "listening" &&
+                      isVoiceRecording &&
+                      "🎤 Listening - Speak now (auto-stops after silence)"}
+                    {voiceState === "listening" &&
+                      !isVoiceRecording &&
+                      "⏳ Waiting for microphone..."}
+                    {voiceState === "processing" && "⏳ Processing..."}
+                    {voiceState === "speaking" && (
+                      <>
+                        🔊 Speaking response...
+                        {useNaturalTTS && naturalTTSSupported ? (
+                          <span className="tts-badge natural">
+                            {" "}
+                            🎤 Natural Voice (OpenAI)
+                          </span>
+                        ) : (
+                          <span className="tts-badge browser">
+                            {" "}
+                            ⚠️ Browser TTS (Robotic)
+                          </span>
+                        )}
+                      </>
+                    )}
+                    {voiceState === "idle" &&
+                      "Voice conversation active - Speak naturally"}
                   </span>
                 </div>
-                {voiceState === 'listening' && (
+                {voiceState === "listening" && (
                   <button
                     onClick={stopVoiceConversation}
                     className="stop-voice-button"
@@ -433,13 +489,18 @@ function App() {
                     Stop Recording
                   </button>
                 )}
-                {(voiceState === 'speaking' || isTTSSpeaking) && (
+                {(voiceState === "speaking" || isTTSSpeaking) && (
                   <button
                     onClick={stopTTS}
                     className="stop-speaking-button"
                     aria-label="Stop speaking"
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
                       <rect x="6" y="6" width="12" height="12" rx="2" />
                     </svg>
                     Stop Speaking
@@ -460,7 +521,7 @@ function App() {
               onKeyPress={handleKeyPress}
               placeholder="Type your message... (Press Enter to send, Shift+Enter for new line)"
               rows={3}
-                    disabled={loading || isStreaming}
+              disabled={loading || isStreaming}
               className="message-input"
             />
             <div className="input-actions">
@@ -484,7 +545,14 @@ function App() {
                       </>
                     ) : (
                       <>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
                           <line x1="22" y1="2" x2="11" y2="13"></line>
                           <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                         </svg>
@@ -496,7 +564,10 @@ function App() {
               )}
               {isVoiceConversationActive && (
                 <div className="voice-conversation-input-disabled">
-                  <p>Voice conversation mode is active. Speak naturally to continue the conversation.</p>
+                  <p>
+                    Voice conversation mode is active. Speak naturally to
+                    continue the conversation.
+                  </p>
                 </div>
               )}
             </div>

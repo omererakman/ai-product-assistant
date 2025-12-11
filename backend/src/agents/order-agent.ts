@@ -10,9 +10,12 @@ import { Product } from "../models/product.js";
 import { loadProductsFromDirectory } from "../loaders/directory-loader.js";
 import { ProductContextManager } from "../utils/product-context.js";
 import { ProductListItem } from "../orchestrator/index.js";
-import { GuardrailsCallbackHandler, DEFAULT_CONFIG } from "../security/index.js";
+import {
+  GuardrailsCallbackHandler,
+  DEFAULT_CONFIG,
+} from "../security/index.js";
 import { getDataPath } from "../utils/paths.js";
-import { LANGUAGE_NAMES } from "../constants/languages.js";
+import { LANGUAGE_NAMES, type LanguageCode } from "../constants/languages.js";
 
 const db = createDatabase();
 
@@ -29,7 +32,7 @@ const searchProductsTool = new DynamicStructuredTool({
     const { query } = input;
     logger.debug({ query }, "Searching products");
     const products = await loadProductsFromDirectory(getDataPath());
-    
+
     const lowerQuery = query.toLowerCase();
     const matchingProducts = products.filter(
       (p: Product) =>
@@ -68,10 +71,7 @@ const prepareOrderConfirmationTool = new DynamicStructuredTool({
       )
       .min(1)
       .describe("Order items"),
-    customer_name: z
-      .string()
-      .min(1)
-      .describe("Customer name (REQUIRED)"),
+    customer_name: z.string().min(1).describe("Customer name (REQUIRED)"),
     customer_email: z
       .string()
       .email()
@@ -108,7 +108,15 @@ const prepareOrderConfirmationTool = new DynamicStructuredTool({
     billing_address: string;
     invoice_email: string;
   }) => {
-    const { items, customer_name, customer_email, customer_phone, shipping_address, billing_address, invoice_email } = input;
+    const {
+      items,
+      customer_name,
+      customer_email,
+      customer_phone,
+      shipping_address,
+      billing_address,
+      invoice_email,
+    } = input;
     logger.debug({ items: items.length }, "Preparing order confirmation");
 
     if (!customer_name || customer_name.trim() === "") {
@@ -125,7 +133,7 @@ const prepareOrderConfirmationTool = new DynamicStructuredTool({
 
     const orderSummary = {
       success: true,
-      items: items.map(item => ({
+      items: items.map((item) => ({
         product_name: item.product_name,
         quantity: item.quantity,
         price: item.price,
@@ -138,15 +146,23 @@ const prepareOrderConfirmationTool = new DynamicStructuredTool({
       shipping_address: shipping_address?.trim(),
       billing_address: billing_address.trim(),
       invoice_email: invoice_email.trim(),
-      confirmation_message: `Please confirm your order:\n\n` +
+      confirmation_message:
+        `Please confirm your order:\n\n` +
         `**Order Details:**\n` +
-        items.map(item => `- ${item.product_name} x${item.quantity} @ $${item.price.toFixed(2)} each = $${(item.price * item.quantity).toFixed(2)}`).join("\n") +
+        items
+          .map(
+            (item) =>
+              `- ${item.product_name} x${item.quantity} @ $${item.price.toFixed(2)} each = $${(item.price * item.quantity).toFixed(2)}`,
+          )
+          .join("\n") +
         `\n\n**Total: $${totalPrice.toFixed(2)}**\n\n` +
         `**Customer Information:**\n` +
         `- Name: ${customer_name.trim()}\n` +
         (customer_email ? `- Email: ${customer_email.trim()}\n` : "") +
         (customer_phone ? `- Phone: ${customer_phone.trim()}\n` : "") +
-        (shipping_address ? `- Shipping Address: ${shipping_address.trim()}\n` : "") +
+        (shipping_address
+          ? `- Shipping Address: ${shipping_address.trim()}\n`
+          : "") +
         `- Billing Address: ${billing_address.trim()}\n` +
         `- Invoice Email: ${invoice_email.trim()}\n\n` +
         `Please confirm if you'd like to proceed with this order.`,
@@ -172,10 +188,7 @@ const createOrderTool = new DynamicStructuredTool({
       )
       .min(1)
       .describe("Order items"),
-    customer_name: z
-      .string()
-      .min(1)
-      .describe("Customer name (REQUIRED)"),
+    customer_name: z.string().min(1).describe("Customer name (REQUIRED)"),
     customer_email: z
       .string()
       .email()
@@ -212,7 +225,15 @@ const createOrderTool = new DynamicStructuredTool({
     billing_address: string;
     invoice_email: string;
   }) => {
-    const { items, customer_name, customer_email, customer_phone, shipping_address, billing_address, invoice_email } = input;
+    const {
+      items,
+      customer_name,
+      customer_email,
+      customer_phone,
+      shipping_address,
+      billing_address,
+      invoice_email,
+    } = input;
     logger.debug({ items: items.length }, "Creating order");
 
     if (!customer_name || customer_name.trim() === "") {
@@ -245,7 +266,7 @@ const createOrderTool = new DynamicStructuredTool({
 
     try {
       logger.debug({ orderData }, "Validating order data");
-      
+
       const validatedOrder = validateOrder({
         ...orderData,
         order_id: "temp",
@@ -264,7 +285,8 @@ const createOrderTool = new DynamicStructuredTool({
       });
     } catch (error) {
       logger.error({ error, orderData }, "Failed to create order");
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       return JSON.stringify({
         success: false,
         error: errorMessage,
@@ -286,9 +308,16 @@ export class OrderAgent {
       temperature: 0.3, // Lower temperature for more consistent order processing
       callbacks: [new GuardrailsCallbackHandler(DEFAULT_CONFIG)],
     });
-    this.tools = [searchProductsTool, prepareOrderConfirmationTool, createOrderTool];
+    this.tools = [
+      searchProductsTool,
+      prepareOrderConfirmationTool,
+      createOrderTool,
+    ];
 
-    logger.debug({ agent: this.name }, "Order Agent initialized with guardrails");
+    logger.debug(
+      { agent: this.name },
+      "Order Agent initialized with guardrails",
+    );
   }
 
   async invoke(
@@ -313,9 +342,10 @@ export class OrderAgent {
       .map((msg) => `${msg.role}: ${msg.content}`)
       .join("\n");
 
-    const languageInstruction = language && LANGUAGE_NAMES[language as keyof typeof LANGUAGE_NAMES]
-      ? `\n\nLANGUAGE SETTING: The user's language is set to ${LANGUAGE_NAMES[language]}. Respond ONLY in ${LANGUAGE_NAMES[language]}.`
-      : '';
+    const languageInstruction =
+      language && language in LANGUAGE_NAMES
+        ? `\n\nLANGUAGE SETTING: The user's language is set to ${LANGUAGE_NAMES[language as LanguageCode]}. Respond ONLY in ${LANGUAGE_NAMES[language as LanguageCode]}.`
+        : "";
 
     const messages: Array<[string, string]> = [
       [
@@ -398,23 +428,23 @@ When searching for products:
 If the user hasn't confirmed an order yet, just search for products and provide information.`,
       ],
     ];
-    
+
     if (historyContext) {
       messages.push(["human", `Previous conversation:\n${historyContext}`]);
     }
-    
+
     messages.push(["human", "{question}"]);
-    
+
     const prompt = ChatPromptTemplate.fromMessages(messages);
 
     logger.debug(
-      { 
+      {
         toolCount: this.tools.length,
-        toolNames: this.tools.map(t => t.name)
+        toolNames: this.tools.map((t) => t.name),
       },
-      "Binding tools to LLM"
+      "Binding tools to LLM",
     );
-    
+
     const llmWithTools = this.llm.bindTools(this.tools);
     const chain = prompt.pipe(llmWithTools);
 
@@ -436,26 +466,49 @@ If the user hasn't confirmed an order yet, just search for products and provide 
         const tool = this.tools.find((t) => t.name === toolCall.name);
         if (tool) {
           try {
-            const result = await tool.invoke(toolCall.args as Record<string, unknown>);
+            const result = await tool.invoke(
+              toolCall.args as Record<string, unknown>,
+            );
             const parsedResult = JSON.parse(result as string);
 
-            if (toolCall.name === "prepare_order_confirmation" && parsedResult.success) {
-              finalResponse = parsedResult.confirmation_message || 
+            if (
+              toolCall.name === "prepare_order_confirmation" &&
+              parsedResult.success
+            ) {
+              finalResponse =
+                parsedResult.confirmation_message ||
                 `Please confirm your order:\n\n` +
-                `**Order Details:**\n` +
-                parsedResult.items.map((item: { product_name: string; quantity: number; price: number; subtotal: number }) => 
-                  `- ${item.product_name} x${item.quantity} @ $${item.price.toFixed(2)} each = $${item.subtotal.toFixed(2)}`
-                ).join("\n") +
-                `\n\n**Total: $${parsedResult.total_price.toFixed(2)}**\n\n` +
-                `**Customer Information:**\n` +
-                `- Name: ${parsedResult.customer_name}\n` +
-                (parsedResult.customer_email ? `- Email: ${parsedResult.customer_email}\n` : "") +
-                (parsedResult.customer_phone ? `- Phone: ${parsedResult.customer_phone}\n` : "") +
-                (parsedResult.shipping_address ? `- Shipping Address: ${parsedResult.shipping_address}\n` : "") +
-                `- Billing Address: ${parsedResult.billing_address}\n` +
-                `- Invoice Email: ${parsedResult.invoice_email}\n\n` +
-                `Please confirm if you'd like to proceed with this order.`;
-            } else if (toolCall.name === "create_order" && parsedResult.success) {
+                  `**Order Details:**\n` +
+                  parsedResult.items
+                    .map(
+                      (item: {
+                        product_name: string;
+                        quantity: number;
+                        price: number;
+                        subtotal: number;
+                      }) =>
+                        `- ${item.product_name} x${item.quantity} @ $${item.price.toFixed(2)} each = $${item.subtotal.toFixed(2)}`,
+                    )
+                    .join("\n") +
+                  `\n\n**Total: $${parsedResult.total_price.toFixed(2)}**\n\n` +
+                  `**Customer Information:**\n` +
+                  `- Name: ${parsedResult.customer_name}\n` +
+                  (parsedResult.customer_email
+                    ? `- Email: ${parsedResult.customer_email}\n`
+                    : "") +
+                  (parsedResult.customer_phone
+                    ? `- Phone: ${parsedResult.customer_phone}\n`
+                    : "") +
+                  (parsedResult.shipping_address
+                    ? `- Shipping Address: ${parsedResult.shipping_address}\n`
+                    : "") +
+                  `- Billing Address: ${parsedResult.billing_address}\n` +
+                  `- Invoice Email: ${parsedResult.invoice_email}\n\n` +
+                  `Please confirm if you'd like to proceed with this order.`;
+            } else if (
+              toolCall.name === "create_order" &&
+              parsedResult.success
+            ) {
               orderCreated = true;
               orderId = parsedResult.order_id;
               finalResponse = `Perfect! Your order has been confirmed.\n\nOrder ID: ${parsedResult.order_id}\nTotal: $${parsedResult.total_price.toFixed(2)}\n\nItems:\n${parsedResult.items.map((item: { product_name: string; quantity: number; price: number }) => `- ${item.product_name} x${item.quantity} @ $${item.price.toFixed(2)}`).join("\n")}\n\nThank you for your purchase!`;
@@ -464,12 +517,18 @@ If the user hasn't confirmed an order yet, just search for products and provide 
                 const products = parsedResult.products as Product[];
 
                 // Track structured product list
-                trackedProductList = ProductContextManager.extractFromProducts(products);
+                trackedProductList =
+                  ProductContextManager.extractFromProducts(products);
 
                 if (products.length === 1) {
                   finalResponse = `I found **${products[0].name}** for $${products[0].price.toFixed(2)}. Would you like more information about this product, such as specifications, features, or availability?`;
                 } else {
-                  const productList = products.map((p: Product) => `- **${p.name}** - $${p.price.toFixed(2)}`).join("\n");
+                  const productList = products
+                    .map(
+                      (p: Product) =>
+                        `- **${p.name}** - $${p.price.toFixed(2)}`,
+                    )
+                    .join("\n");
                   finalResponse = `I found ${products.length} product(s) that might interest you:\n\n${productList}\n\nWould you like more information about any of these products?`;
                 }
               } else {
@@ -479,16 +538,22 @@ If the user hasn't confirmed an order yet, just search for products and provide 
               finalResponse = result as string;
             }
           } catch (error) {
-            logger.error({ error, toolCall, input: toolCall.args }, "Error executing tool");
-            const errorMessage = error instanceof Error ? error.message : String(error);
+            logger.error(
+              { error, toolCall, input: toolCall.args },
+              "Error executing tool",
+            );
+            const errorMessage =
+              error instanceof Error ? error.message : String(error);
             finalResponse = `I encountered an error processing your request: ${errorMessage}. Please try again.`;
           }
         }
       }
 
-      const isOrderConfirmation = toolCalls.some(tc => tc.name === "prepare_order_confirmation");
-      const isOrderCreated = toolCalls.some(tc => tc.name === "create_order");
-      
+      const isOrderConfirmation = toolCalls.some(
+        (tc) => tc.name === "prepare_order_confirmation",
+      );
+      const isOrderCreated = toolCalls.some((tc) => tc.name === "create_order");
+
       if (!isOrderConfirmation && !isOrderCreated) {
         const formattedResponse = await this.llm.invoke(
           `Based on the tool execution results, provide a natural response to the user:\n\nTool Results:\n${finalResponse}\n\nUser's original question: ${question}\n\nProvide a friendly, conversational response. If the tool results mention products, maintain the approach of asking if the customer needs more information rather than listing all specifications immediately.`,
@@ -496,7 +561,9 @@ If the user hasn't confirmed an order yet, just search for products and provide 
         finalResponse = (formattedResponse.content as string) || finalResponse;
       }
     } else {
-      finalResponse = (response.content as string) || "I'm here to help with product information and orders. How can I assist you?";
+      finalResponse =
+        (response.content as string) ||
+        "I'm here to help with product information and orders. How can I assist you?";
     }
 
     return {
@@ -531,8 +598,8 @@ If the user hasn't confirmed an order yet, just search for products and provide 
     const result = await this.invoke(question, chatHistory, language);
     const words = result.response.split(/(\s+)/);
     for (const word of words) {
-      onToken(word);
-      await new Promise(resolve => setTimeout(resolve, 10));
+      onToken?.(word);
+      await new Promise((resolve) => setTimeout(resolve, 10));
     }
 
     return result;

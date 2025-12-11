@@ -1,0 +1,25 @@
+# Check if .env file is being committed
+if git diff --cached --name-only | grep -q "^\.env$"; then
+  echo "❌ Error: Attempting to commit .env file"
+  echo "   .env files contain sensitive information and should not be committed."
+  echo "   Please remove .env from your commit using: git reset HEAD .env"
+  exit 1
+fi
+
+# Also check for any .env files in subdirectories
+if git diff --cached --name-only | grep -q "\.env$"; then
+  echo "❌ Error: Attempting to commit .env file(s)"
+  echo "   .env files contain sensitive information and should not be committed."
+  echo "   Files detected:"
+  git diff --cached --name-only | grep "\.env$" | sed 's/^/     - /'
+  echo "   Please remove .env files from your commit using: git reset HEAD <file>"
+  exit 1
+fi
+
+# Run lint check
+echo "🔍 Running ESLint..."
+npm run lint || exit 1
+
+# Run prettier check
+echo "💅 Running Prettier check..."
+npm run format:check || exit 1

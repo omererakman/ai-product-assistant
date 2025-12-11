@@ -1,14 +1,14 @@
-import { useEffect, useRef, useMemo } from 'react';
-import './TurnTakingIndicator.css';
+import { useEffect, useRef, useMemo } from "react";
+import "./TurnTakingIndicator.css";
 
 interface TurnTakingIndicatorProps {
-  state: 'idle' | 'listening' | 'processing' | 'speaking';
+  state: "idle" | "listening" | "processing" | "speaking";
   onCueDismiss?: () => void;
 }
 
 export function TurnTakingIndicator({
   state,
-  onCueDismiss
+  onCueDismiss,
 }: TurnTakingIndicatorProps) {
   const prevStateRef = useRef(state);
   const audioPlayedRef = useRef(false);
@@ -20,8 +20,8 @@ export function TurnTakingIndicator({
 
   // Derive showCue from state transition - computed during render
   const showCue = useMemo(() => {
-    const wasSpeaking = prevStateRef.current === 'speaking';
-    const isListening = state === 'listening';
+    const wasSpeaking = prevStateRef.current === "speaking";
+    const isListening = state === "listening";
     return isListening && wasSpeaking;
   }, [state]);
 
@@ -37,31 +37,44 @@ export function TurnTakingIndicator({
     if (showCue && !audioPlayedRef.current) {
       // Create a subtle audio cue using Web Audio API
       try {
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const audioContext = new (
+          window.AudioContext ||
+          (
+            window as typeof window & {
+              webkitAudioContext?: typeof AudioContext;
+            }
+          ).webkitAudioContext
+        )();
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
-        
+
         oscillator.connect(gainNode);
         gainNode.connect(audioContext.destination);
-        
+
         oscillator.frequency.value = 800; // Pleasant tone
-        oscillator.type = 'sine';
-        
+        oscillator.type = "sine";
+
         gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-        gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.01);
-        gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.15);
-        
+        gainNode.gain.linearRampToValueAtTime(
+          0.1,
+          audioContext.currentTime + 0.01,
+        );
+        gainNode.gain.linearRampToValueAtTime(
+          0,
+          audioContext.currentTime + 0.15,
+        );
+
         oscillator.start(audioContext.currentTime);
         oscillator.stop(audioContext.currentTime + 0.15);
-        
+
         audioPlayedRef.current = true;
       } catch (error) {
-        console.warn('Could not play audio cue:', error);
+        console.warn("Could not play audio cue:", error);
       }
     }
   }, [showCue]);
 
-  if (!showCue || state !== 'listening') {
+  if (!showCue || state !== "listening") {
     return null;
   }
 

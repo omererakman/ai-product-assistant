@@ -15,12 +15,12 @@ export interface Product {
 
 export function loadProductsFromJSON(filePath: string): Product[] {
   logger.debug({ filePath }, "Loading products from JSON file");
-  
+
   try {
     const fullPath = join(process.cwd(), filePath);
     const fileContent = readFileSync(fullPath, "utf-8");
     const products: Product[] = JSON.parse(fileContent);
-    
+
     logger.debug({ count: products.length }, "Products loaded successfully");
     return products;
   } catch (error) {
@@ -49,7 +49,8 @@ ${product.specifications ? `Specifications: ${JSON.stringify(product.specificati
       stock_status: product.stock_status,
       sourceId: `product-${product.product_id}`,
       os: product.specifications?.os || null,
-      sub_category: (product as any).sub_category || null,
+      sub_category:
+        (product as Product & { sub_category?: string }).sub_category || null,
     };
 
     if (product.specifications) {

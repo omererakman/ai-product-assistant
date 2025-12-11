@@ -1,12 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
-import { LANGUAGE_OPTIONS, type LanguageCode } from '../constants/languages';
-import './VoiceSettings.css';
+import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
+import { LANGUAGE_OPTIONS, type LanguageCode } from "../constants/languages";
+import "./VoiceSettings.css";
 
-export type TTSVoice = 'alloy' | 'echo' | 'fable' | 'onyx' | 'nova' | 'shimmer';
+export type TTSVoice = "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer";
 
 // Also export as a const for runtime use
-export const TTS_VOICES: TTSVoice[] = ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'];
+export const TTS_VOICES: TTSVoice[] = [
+  "alloy",
+  "echo",
+  "fable",
+  "onyx",
+  "nova",
+  "shimmer",
+];
 
 interface VoiceSettingsProps {
   useNaturalTTS: boolean;
@@ -21,12 +28,12 @@ interface VoiceSettingsProps {
 }
 
 const VOICE_DESCRIPTIONS: Record<TTSVoice, string> = {
-  alloy: 'Neutral, balanced',
-  echo: 'Warm, friendly',
-  fable: 'Expressive, storytelling',
-  onyx: 'Deep, authoritative',
-  nova: 'Bright, energetic',
-  shimmer: 'Soft, gentle',
+  alloy: "Neutral, balanced",
+  echo: "Warm, friendly",
+  fable: "Expressive, storytelling",
+  onyx: "Deep, authoritative",
+  nova: "Bright, energetic",
+  shimmer: "Soft, gentle",
 };
 
 export function VoiceSettings({
@@ -60,10 +67,10 @@ export function VoiceSettings({
     if (isOpen) {
       // Small delay to avoid immediate closure
       setTimeout(() => {
-        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener("mousedown", handleClickOutside);
       }, 100);
       return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener("mousedown", handleClickOutside);
       };
     }
   }, [isOpen]);
@@ -76,7 +83,7 @@ export function VoiceSettings({
       const panelTop = Math.max(buttonRect.bottom + 8, headerHeight);
       panelRef.current.style.top = `${panelTop}px`;
       panelRef.current.style.right = `${window.innerWidth - buttonRect.right}px`;
-      
+
       // Ensure panel doesn't go off-screen
       const panelHeight = panelRef.current.offsetHeight || 400;
       if (panelTop + panelHeight > window.innerHeight - 20) {
@@ -92,135 +99,162 @@ export function VoiceSettings({
         className="voice-settings-toggle"
         onClick={(e) => {
           e.stopPropagation();
-          console.log('Settings button clicked, isOpen:', isOpen);
+          console.log("Settings button clicked, isOpen:", isOpen);
           setIsOpen(!isOpen);
         }}
         aria-label="Language and voice settings"
         aria-expanded={isOpen}
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
           <path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16z" />
           <path d="M12 6v6l4 2" />
         </svg>
         <span>Settings</span>
       </button>
 
-      {isOpen && typeof document !== 'undefined' && createPortal(
-        <>
-          <div 
-            className="voice-settings-backdrop"
-            onClick={() => setIsOpen(false)}
-          />
-          <div 
-            ref={panelRef} 
-            className="voice-settings-panel"
-            style={{ 
-              display: 'block', 
-              visibility: 'visible', 
-              opacity: 1,
-              backgroundColor: '#ffffff',
-              background: '#ffffff',
-              zIndex: 2147483647,
-              position: 'fixed'
-            }}
-          >
-          <div className="voice-settings-header">
-            <h3>Language & Voice Settings</h3>
-            <button
-              className="close-button"
+      {isOpen &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <>
+            <div
+              className="voice-settings-backdrop"
               onClick={() => setIsOpen(false)}
-              aria-label="Close settings"
+            />
+            <div
+              ref={panelRef}
+              className="voice-settings-panel"
+              style={{
+                display: "block",
+                visibility: "visible",
+                opacity: 1,
+                backgroundColor: "#ffffff",
+                background: "#ffffff",
+                zIndex: 2147483647,
+                position: "fixed",
+              }}
             >
-              ×
-            </button>
-          </div>
+              <div className="voice-settings-header">
+                <h3>Language & Voice Settings</h3>
+                <button
+                  className="close-button"
+                  onClick={() => setIsOpen(false)}
+                  aria-label="Close settings"
+                >
+                  ×
+                </button>
+              </div>
 
-          <div className="voice-settings-content">
-            {/* Language Selection */}
-            <div className="setting-group">
-              <label className="setting-label">Language</label>
-              <select
-                value={language}
-                onChange={(e) => onLanguageChange(e.target.value as LanguageCode)}
-                className="language-select"
-              >
-                {LANGUAGE_OPTIONS.map((lang) => (
-                  <option key={lang.code} value={lang.code}>
-                    {lang.name}
-                  </option>
-                ))}
-              </select>
-              <p className="setting-description">
-                Language for both text and voice conversations. The assistant will respond in this language. Default: English.
-              </p>
-            </div>
+              <div className="voice-settings-content">
+                {/* Language Selection */}
+                <div className="setting-group">
+                  <label className="setting-label">Language</label>
+                  <select
+                    value={language}
+                    onChange={(e) =>
+                      onLanguageChange(e.target.value as LanguageCode)
+                    }
+                    className="language-select"
+                  >
+                    {LANGUAGE_OPTIONS.map((lang) => (
+                      <option key={lang.code} value={lang.code}>
+                        {lang.name}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="setting-description">
+                    Language for both text and voice conversations. The
+                    assistant will respond in this language. Default: English.
+                  </p>
+                </div>
 
-            {/* Natural TTS Toggle */}
-            <div className="setting-group">
-              <label className="setting-label">
-                <input
-                  type="checkbox"
-                  checked={useNaturalTTS}
-                  onChange={(e) => onNaturalTTSChange(e.target.checked)}
-                  disabled={!naturalTTSSupported}
-                />
-                <span>
-                  Use Natural Voice (OpenAI TTS)
-                  {!naturalTTSSupported && (
-                    <span className="setting-hint"> (Not available - check backend)</span>
-                  )}
-                </span>
-              </label>
-              <p className="setting-description">
-                Higher quality, more natural-sounding voice. Requires backend TTS endpoint.
-              </p>
-            </div>
+                {/* Natural TTS Toggle */}
+                <div className="setting-group">
+                  <label className="setting-label">
+                    <input
+                      type="checkbox"
+                      checked={useNaturalTTS}
+                      onChange={(e) => onNaturalTTSChange(e.target.checked)}
+                      disabled={!naturalTTSSupported}
+                    />
+                    <span>
+                      Use Natural Voice (OpenAI TTS)
+                      {!naturalTTSSupported && (
+                        <span className="setting-hint">
+                          {" "}
+                          (Not available - check backend)
+                        </span>
+                      )}
+                    </span>
+                  </label>
+                  <p className="setting-description">
+                    Higher quality, more natural-sounding voice. Requires
+                    backend TTS endpoint.
+                  </p>
+                </div>
 
-            {/* Voice Selection */}
-            {useNaturalTTS && naturalTTSSupported && (
-              <div className="setting-group">
-                <label className="setting-label">Voice</label>
-                <div className="voice-options">
-                  {(['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'] as TTSVoice[]).map((voice) => (
-                    <button
-                      key={voice}
-                      className={`voice-option ${ttsVoice === voice ? 'active' : ''}`}
-                      onClick={() => onVoiceChange(voice)}
-                      aria-pressed={ttsVoice === voice}
-                    >
-                      <span className="voice-name">{voice}</span>
-                      <span className="voice-description">{VOICE_DESCRIPTIONS[voice]}</span>
-                    </button>
-                  ))}
+                {/* Voice Selection */}
+                {useNaturalTTS && naturalTTSSupported && (
+                  <div className="setting-group">
+                    <label className="setting-label">Voice</label>
+                    <div className="voice-options">
+                      {(
+                        [
+                          "alloy",
+                          "echo",
+                          "fable",
+                          "onyx",
+                          "nova",
+                          "shimmer",
+                        ] as TTSVoice[]
+                      ).map((voice) => (
+                        <button
+                          key={voice}
+                          className={`voice-option ${ttsVoice === voice ? "active" : ""}`}
+                          onClick={() => onVoiceChange(voice)}
+                          aria-pressed={ttsVoice === voice}
+                        >
+                          <span className="voice-name">{voice}</span>
+                          <span className="voice-description">
+                            {VOICE_DESCRIPTIONS[voice]}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Speech Rate */}
+                <div className="setting-group">
+                  <label className="setting-label">
+                    Speech Rate: {ttsRate.toFixed(2)}x
+                  </label>
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="2.0"
+                    step="0.1"
+                    value={ttsRate}
+                    onChange={(e) => onRateChange(parseFloat(e.target.value))}
+                    className="rate-slider"
+                  />
+                  <div className="rate-labels">
+                    <span>Slow</span>
+                    <span>Normal</span>
+                    <span>Fast</span>
+                  </div>
                 </div>
               </div>
-            )}
-
-            {/* Speech Rate */}
-            <div className="setting-group">
-              <label className="setting-label">
-                Speech Rate: {ttsRate.toFixed(2)}x
-              </label>
-              <input
-                type="range"
-                min="0.5"
-                max="2.0"
-                step="0.1"
-                value={ttsRate}
-                onChange={(e) => onRateChange(parseFloat(e.target.value))}
-                className="rate-slider"
-              />
-              <div className="rate-labels">
-                <span>Slow</span>
-                <span>Normal</span>
-                <span>Fast</span>
-              </div>
             </div>
-          </div>
-        </div>
-        </>,
-        document.body
-      )}
+          </>,
+          document.body,
+        )}
     </div>
   );
 }

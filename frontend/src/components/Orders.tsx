@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import './Orders.css';
+import { useState, useEffect } from "react";
+import "./Orders.css";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 interface OrderItem {
   product_id: string;
@@ -20,7 +20,13 @@ interface Order {
   shipping_address?: string;
   billing_address?: string;
   invoice_email?: string;
-  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  status:
+    | "pending"
+    | "confirmed"
+    | "processing"
+    | "shipped"
+    | "delivered"
+    | "cancelled";
   created_at: string;
 }
 
@@ -33,7 +39,9 @@ export function Orders({ onBack }: OrdersProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
-  const [statusFilter, setStatusFilter] = useState<string>('all-except-cancelled');
+  const [statusFilter, setStatusFilter] = useState<string>(
+    "all-except-cancelled",
+  );
 
   useEffect(() => {
     fetchOrders();
@@ -45,13 +53,13 @@ export function Orders({ onBack }: OrdersProps) {
       setError(null);
       const response = await fetch(`${API_URL}/api/orders`);
       if (!response.ok) {
-        throw new Error('Failed to fetch orders');
+        throw new Error("Failed to fetch orders");
       }
       const data = await response.json();
       setOrders(data.orders || []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load orders');
-      console.error('Error fetching orders:', err);
+      setError(err instanceof Error ? err.message : "Failed to load orders");
+      console.error("Error fetching orders:", err);
     } finally {
       setLoading(false);
     }
@@ -65,34 +73,36 @@ export function Orders({ onBack }: OrdersProps) {
     try {
       setCancellingId(orderId);
       const response = await fetch(`${API_URL}/api/orders/${orderId}/cancel`, {
-        method: 'PATCH',
+        method: "PATCH",
       });
 
       if (!response.ok) {
-        throw new Error('Failed to cancel order');
+        throw new Error("Failed to cancel order");
       }
 
-      const data = await response.json();
-      
+      await response.json();
+
       // Update the order status in the list
       setOrders((prev) =>
         prev.map((order) =>
-          order.order_id === orderId ? { ...order, status: 'cancelled' } : order
-        )
+          order.order_id === orderId
+            ? { ...order, status: "cancelled" }
+            : order,
+        ),
       );
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to cancel order');
-      console.error('Error cancelling order:', err);
+      alert(err instanceof Error ? err.message : "Failed to cancel order");
+      console.error("Error cancelling order:", err);
     } finally {
       setCancellingId(null);
     }
   };
 
   const filteredOrders = orders.filter((order) => {
-    if (statusFilter === 'all-except-cancelled') {
-      return order.status !== 'cancelled';
+    if (statusFilter === "all-except-cancelled") {
+      return order.status !== "cancelled";
     }
-    if (statusFilter === 'all') {
+    if (statusFilter === "all") {
       return true;
     }
     return order.status === statusFilter;
@@ -109,20 +119,20 @@ export function Orders({ onBack }: OrdersProps) {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending':
-        return '#f59e0b';
-      case 'confirmed':
-        return '#3b82f6';
-      case 'processing':
-        return '#8b5cf6';
-      case 'shipped':
-        return '#6366f1';
-      case 'delivered':
-        return '#22c55e';
-      case 'cancelled':
-        return '#ef4444';
+      case "pending":
+        return "#f59e0b";
+      case "confirmed":
+        return "#3b82f6";
+      case "processing":
+        return "#8b5cf6";
+      case "shipped":
+        return "#6366f1";
+      case "delivered":
+        return "#22c55e";
+      case "cancelled":
+        return "#ef4444";
       default:
-        return '#6b7280';
+        return "#6b7280";
     }
   };
 
@@ -189,7 +199,11 @@ export function Orders({ onBack }: OrdersProps) {
             <option value="delivered">Delivered</option>
             <option value="cancelled">Cancelled</option>
           </select>
-          <button onClick={fetchOrders} className="refresh-button" title="Refresh orders">
+          <button
+            onClick={fetchOrders}
+            className="refresh-button"
+            title="Refresh orders"
+          >
             ↻ Refresh
           </button>
         </div>
@@ -197,7 +211,11 @@ export function Orders({ onBack }: OrdersProps) {
 
       {filteredOrders.length === 0 ? (
         <div className="orders-empty">
-          <p>{orders.length === 0 ? 'No orders found.' : 'No orders match the selected filter.'}</p>
+          <p>
+            {orders.length === 0
+              ? "No orders found."
+              : "No orders match the selected filter."}
+          </p>
         </div>
       ) : (
         <div className="orders-list">
@@ -208,12 +226,15 @@ export function Orders({ onBack }: OrdersProps) {
                   <h2>Order {order.order_id}</h2>
                   <span
                     className="order-status"
-                    style={{ backgroundColor: `${getStatusColor(order.status)}20`, color: getStatusColor(order.status) }}
+                    style={{
+                      backgroundColor: `${getStatusColor(order.status)}20`,
+                      color: getStatusColor(order.status),
+                    }}
                   >
                     {order.status.toUpperCase()}
                   </span>
                 </div>
-                {order.status !== 'cancelled' && (
+                {order.status !== "cancelled" && (
                   <button
                     onClick={() => handleCancel(order.order_id)}
                     disabled={cancellingId === order.order_id}
@@ -227,7 +248,14 @@ export function Orders({ onBack }: OrdersProps) {
                       </>
                     ) : (
                       <>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
                           <circle cx="12" cy="12" r="10" />
                           <path d="M15 9l-6 6M9 9l6 6" />
                         </svg>
@@ -246,8 +274,12 @@ export function Orders({ onBack }: OrdersProps) {
                       <li key={idx}>
                         <span className="item-name">{item.product_name}</span>
                         <span className="item-quantity">x{item.quantity}</span>
-                        <span className="item-price">${item.price.toFixed(2)}</span>
-                        <span className="item-total">${(item.price * item.quantity).toFixed(2)}</span>
+                        <span className="item-price">
+                          ${item.price.toFixed(2)}
+                        </span>
+                        <span className="item-total">
+                          ${(item.price * item.quantity).toFixed(2)}
+                        </span>
                       </li>
                     ))}
                   </ul>
@@ -256,7 +288,9 @@ export function Orders({ onBack }: OrdersProps) {
                   </div>
                 </div>
 
-                {(order.customer_name || order.customer_email || order.customer_phone) && (
+                {(order.customer_name ||
+                  order.customer_email ||
+                  order.customer_phone) && (
                   <div className="order-section">
                     <h3>Customer Information</h3>
                     <div className="order-info-grid">

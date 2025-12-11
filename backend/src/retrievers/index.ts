@@ -5,7 +5,9 @@ import { createSimilarityRetriever } from "./similarity.js";
 import { createMMRRetriever } from "./mmr.js";
 import { createHybridRetriever } from "./hybrid.js";
 
-export async function createRetriever(vectorStore: VectorStore): Promise<BaseRetriever> {
+export async function createRetriever(
+  vectorStore: VectorStore,
+): Promise<BaseRetriever> {
   const config = getConfig();
 
   if (config.retrieverType === "mmr") {

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis';
+import React, { useState, useEffect } from "react";
+import { useSpeechSynthesis } from "../hooks/useSpeechSynthesis";
 
 interface VoiceOutputProps {
   text: string;
@@ -8,7 +8,12 @@ interface VoiceOutputProps {
   onSpeechEnd?: () => void;
 }
 
-export function VoiceOutput({ text, autoPlay = false, disabled = false, onSpeechEnd }: VoiceOutputProps) {
+export function VoiceOutput({
+  text,
+  autoPlay = false,
+  disabled = false,
+  onSpeechEnd,
+}: VoiceOutputProps) {
   const { speak, cancel, isSpeaking, isSupported } = useSpeechSynthesis();
   const [hasPlayed, setHasPlayed] = useState(false);
 
@@ -56,14 +61,20 @@ export function VoiceOutput({ text, autoPlay = false, disabled = false, onSpeech
   return (
     <div className="voice-output">
       <button
-        className={`voice-play-button ${isSpeaking ? 'speaking' : ''}`}
+        className={`voice-play-button ${isSpeaking ? "speaking" : ""}`}
         onClick={handlePlay}
-        aria-label={isSpeaking ? 'Stop speaking' : 'Play response'}
-        title={isSpeaking ? 'Stop speaking' : 'Listen to response'}
+        aria-label={isSpeaking ? "Stop speaking" : "Play response"}
+        title={isSpeaking ? "Stop speaking" : "Listen to response"}
       >
         {isSpeaking ? (
           <>
-            <svg className="voice-play-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <svg
+              className="voice-play-icon"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
               <rect x="6" y="4" width="4" height="16" rx="1" />
               <rect x="14" y="4" width="4" height="16" rx="1" />
             </svg>
@@ -71,10 +82,18 @@ export function VoiceOutput({ text, autoPlay = false, disabled = false, onSpeech
           </>
         ) : (
           <>
-            <svg className="voice-play-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              className="voice-play-icon"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <polygon points="5 3 19 12 5 21 5 3" />
             </svg>
-            <span>{hasPlayed ? 'Replay' : 'Listen'}</span>
+            <span>{hasPlayed ? "Replay" : "Listen"}</span>
           </>
         )}
       </button>

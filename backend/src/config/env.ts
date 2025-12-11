@@ -75,7 +75,8 @@ export function getConfig(): Config {
     logLevel: process.env.LOG_LEVEL,
     nodeEnv: process.env.NODE_ENV,
     langfuseEnabled: process.env.LANGFUSE_ENABLED === "true",
-    langfuseEvaluationEnabled: process.env.LANGFUSE_EVALUATION_ENABLED === "true",
+    langfuseEvaluationEnabled:
+      process.env.LANGFUSE_EVALUATION_ENABLED === "true",
     langfuseSecretKey: process.env.LANGFUSE_SECRET_KEY,
     langfusePublicKey: process.env.LANGFUSE_PUBLIC_KEY,
     langfuseBaseUrl: process.env.LANGFUSE_BASE_URL,

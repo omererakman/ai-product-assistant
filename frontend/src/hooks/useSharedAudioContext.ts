@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback } from "react";
 
 let sharedAudioContext: AudioContext | null = null;
 
@@ -7,15 +7,28 @@ export function useSharedAudioContext() {
 
   const unlockAudioContext = useCallback(async () => {
     try {
-      if (!sharedAudioContext || sharedAudioContext.state === 'closed') {
-        sharedAudioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        console.log('🔊 Created shared AudioContext, state:', sharedAudioContext.state);
+      if (!sharedAudioContext || sharedAudioContext.state === "closed") {
+        sharedAudioContext = new (
+          window.AudioContext ||
+          (
+            window as typeof window & {
+              webkitAudioContext?: typeof AudioContext;
+            }
+          ).webkitAudioContext
+        )();
+        console.log(
+          "🔊 Created shared AudioContext, state:",
+          sharedAudioContext.state,
+        );
       }
 
-      if (sharedAudioContext.state === 'suspended') {
-        console.log('⏸️ Shared audio context suspended, resuming...');
+      if (sharedAudioContext.state === "suspended") {
+        console.log("⏸️ Shared audio context suspended, resuming...");
         await sharedAudioContext.resume();
-        console.log('✅ Shared audio context resumed, new state:', sharedAudioContext.state);
+        console.log(
+          "✅ Shared audio context resumed, new state:",
+          sharedAudioContext.state,
+        );
       }
 
       const buffer = sharedAudioContext.createBuffer(1, 1, 22050);
@@ -25,9 +38,9 @@ export function useSharedAudioContext() {
       source.start(0);
 
       setIsReady(true);
-      console.log('✅ Shared AudioContext unlocked and ready for playback');
+      console.log("✅ Shared AudioContext unlocked and ready for playback");
     } catch (error) {
-      console.error('❌ Failed to unlock shared AudioContext:', error);
+      console.error("❌ Failed to unlock shared AudioContext:", error);
       throw error;
     }
   }, []);
@@ -37,9 +50,11 @@ export function useSharedAudioContext() {
   }, []);
 
   const isContextReady = useCallback(() => {
-    return sharedAudioContext !== null &&
-           sharedAudioContext.state === 'running' &&
-           isReady;
+    return (
+      sharedAudioContext !== null &&
+      sharedAudioContext.state === "running" &&
+      isReady
+    );
   }, [isReady]);
 
   return {

@@ -17,7 +17,7 @@ export function getLangfuse(): Langfuse | null {
 
   if (!secretKey || !publicKey) {
     console.warn(
-      "Langfuse is enabled but LANGFUSE_SECRET_KEY or LANGFUSE_PUBLIC_KEY is not set. Langfuse tracking will be disabled."
+      "Langfuse is enabled but LANGFUSE_SECRET_KEY or LANGFUSE_PUBLIC_KEY is not set. Langfuse tracking will be disabled.",
     );
     return null;
   }
@@ -38,7 +38,7 @@ export function getLangfuse(): Langfuse | null {
 
 export async function safeLangfuseOperation<T>(
   operation: (langfuse: Langfuse) => Promise<T> | T,
-  fallback?: T
+  fallback?: T,
 ): Promise<T | undefined> {
   const langfuse = getLangfuse();
   if (!langfuse) {

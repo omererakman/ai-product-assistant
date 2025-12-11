@@ -1,7 +1,7 @@
-import React, { useCallback, useState, useEffect } from 'react';
-import { useAudioRecorder } from '../hooks/useAudioRecorder';
-import { useWhisperTranscription } from '../hooks/useWhisperTranscription';
-import './VoiceInput.css';
+import React, { useCallback, useState, useEffect } from "react";
+import { useAudioRecorder } from "../hooks/useAudioRecorder";
+import { useWhisperTranscription } from "../hooks/useWhisperTranscription";
+import "./VoiceInput.css";
 
 interface VoiceInputProps {
   onTranscript: (transcript: string) => void;
@@ -9,14 +9,21 @@ interface VoiceInputProps {
   language?: string;
 }
 
-export function VoiceInput({ onTranscript, disabled = false, language = 'en' }: VoiceInputProps) {
+export function VoiceInput({
+  onTranscript,
+  disabled = false,
+  language = "en",
+}: VoiceInputProps) {
   const [showRecordingOverlay, setShowRecordingOverlay] = useState(false);
   const [localError, setLocalError] = useState<Error | null>(null);
 
-  const handleTranscriptionComplete = useCallback((transcript: string) => {
-    setLocalError(null);
-    onTranscript(transcript);
-  }, [onTranscript]);
+  const handleTranscriptionComplete = useCallback(
+    (transcript: string) => {
+      setLocalError(null);
+      onTranscript(transcript);
+    },
+    [onTranscript],
+  );
 
   const handleTranscriptionError = useCallback((error: Error) => {
     setLocalError(error);
@@ -33,15 +40,18 @@ export function VoiceInput({ onTranscript, disabled = false, language = 'en' }: 
     onError: handleTranscriptionError,
   });
 
-  const handleRecordingComplete = useCallback(async (audioBlob: Blob) => {
-    setShowRecordingOverlay(false);
-    setLocalError(null);
-    try {
-      await transcribeAudio(audioBlob);
-    } catch (error) {
-      console.error('Transcription error:', error);
-    }
-  }, [transcribeAudio]);
+  const handleRecordingComplete = useCallback(
+    async (audioBlob: Blob) => {
+      setShowRecordingOverlay(false);
+      setLocalError(null);
+      try {
+        await transcribeAudio(audioBlob);
+      } catch (error) {
+        console.error("Transcription error:", error);
+      }
+    },
+    [transcribeAudio],
+  );
 
   const handleRecordingError = useCallback((error: Error) => {
     setLocalError(error);
@@ -65,7 +75,8 @@ export function VoiceInput({ onTranscript, disabled = false, language = 'en' }: 
   }, [isRecording]);
 
   const error = localError || recorderError || transcriptionError;
-  const isLoading = isRecording || isTranscribing;
+  // isLoading is used for UI state but not directly referenced - keeping for potential future use
+  // const isLoading = isRecording || isTranscribing;
 
   if (!recorderSupported) {
     return null;
@@ -82,17 +93,21 @@ export function VoiceInput({ onTranscript, disabled = false, language = 'en' }: 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   return (
     <>
       <button
-        className={`voice-button ${isRecording ? 'recording' : ''} ${isTranscribing ? 'transcribing' : ''}`}
+        className={`voice-button ${isRecording ? "recording" : ""} ${isTranscribing ? "transcribing" : ""}`}
         onClick={handleToggle}
         disabled={disabled || isTranscribing}
-        aria-label={isRecording ? 'Stop recording' : 'Start recording'}
-        title={isRecording ? 'Click to stop recording' : 'Click to start voice recording'}
+        aria-label={isRecording ? "Stop recording" : "Start recording"}
+        title={
+          isRecording
+            ? "Click to stop recording"
+            : "Click to start voice recording"
+        }
       >
         {isTranscribing ? (
           <>
@@ -102,7 +117,12 @@ export function VoiceInput({ onTranscript, disabled = false, language = 'en' }: 
         ) : isRecording ? (
           <>
             <span className="voice-icon recording-icon">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
                 <circle cx="10" cy="10" r="8" />
               </svg>
             </span>
@@ -111,7 +131,14 @@ export function VoiceInput({ onTranscript, disabled = false, language = 'en' }: 
         ) : (
           <>
             <span className="voice-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
                 <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
                 <line x1="12" y1="19" x2="12" y2="23" />
@@ -131,7 +158,15 @@ export function VoiceInput({ onTranscript, disabled = false, language = 'en' }: 
                 <div className="pulse-ring"></div>
                 <div className="pulse-ring delay-1"></div>
                 <div className="pulse-ring delay-2"></div>
-                <svg className="mic-large" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  className="mic-large"
+                  width="48"
+                  height="48"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
                   <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
                   <line x1="12" y1="19" x2="12" y2="23" />
@@ -160,7 +195,12 @@ export function VoiceInput({ onTranscript, disabled = false, language = 'en' }: 
               onClick={stopRecording}
               aria-label="Stop recording"
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
                 <rect x="6" y="6" width="12" height="12" rx="2" />
               </svg>
               Stop Recording
@@ -181,7 +221,7 @@ export function VoiceInput({ onTranscript, disabled = false, language = 'en' }: 
           <div className="error-content">
             <strong>Error:</strong> {error.message}
           </div>
-          <button 
+          <button
             className="error-dismiss"
             onClick={() => {
               setLocalError(null);

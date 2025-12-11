@@ -17,7 +17,7 @@ export interface AudioMetadata {
 }
 
 export function calculateAudioQualityMetrics(
-  metadata: AudioMetadata
+  metadata: AudioMetadata,
 ): AudioQualityMetrics {
   const { mimeType, duration, fileSize, sampleRate, bitrate } = metadata;
 
@@ -88,14 +88,12 @@ export function calculateAudioQualityMetrics(
 
 export function isAudioQualityAcceptable(
   metrics: AudioQualityMetrics,
-  minQualityScore: number = 30
+  minQualityScore: number = 30,
 ): boolean {
   return metrics.qualityScore >= minQualityScore;
 }
 
-export function getQualityAssessment(
-  metrics: AudioQualityMetrics
-): {
+export function getQualityAssessment(metrics: AudioQualityMetrics): {
   level: "excellent" | "good" | "fair" | "poor";
   message: string;
   suggestions: string[];
@@ -130,7 +128,9 @@ export function getQualityAssessment(
   }
 
   if (sampleRate && sampleRate < 16000) {
-    suggestions.push("Sample rate is low - use a better microphone if possible");
+    suggestions.push(
+      "Sample rate is low - use a better microphone if possible",
+    );
   }
 
   return { level, message, suggestions };

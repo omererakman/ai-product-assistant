@@ -14,7 +14,9 @@ export class ProductContextManager {
             specEntries.push([specKey, String(value)]);
           }
         }
-        return specEntries.length > 0 ? Object.fromEntries(specEntries) : undefined;
+        return specEntries.length > 0
+          ? Object.fromEntries(specEntries)
+          : undefined;
       })();
 
       return {
@@ -41,7 +43,9 @@ export class ProductContextManager {
     }));
   }
 
-  static getLatestProductList(chatHistory: ChatMessage[]): ProductListItem[] | null {
+  static getLatestProductList(
+    chatHistory: ChatMessage[],
+  ): ProductListItem[] | null {
     for (let i = chatHistory.length - 1; i >= 0; i--) {
       const message = chatHistory[i];
       if (message.role === "assistant" && message.metadata?.productList) {
@@ -53,7 +57,7 @@ export class ProductContextManager {
 
   static resolveOrdinalReference(
     reference: string,
-    productList: ProductListItem[]
+    productList: ProductListItem[],
   ): ProductListItem | null {
     if (!productList || productList.length === 0) {
       logger.warn("Cannot resolve reference: empty product list");
@@ -69,25 +73,32 @@ export class ProductContextManager {
       { regex: /(?:the\s+)?fourth(?:\s+one)?/i, position: 4 },
       { regex: /(?:the\s+)?fifth(?:\s+one)?/i, position: 5 },
       { regex: /(?:the\s+)?last(?:\s+one)?/i, position: -1 },
-      { regex: /(?:number\s+)?(\d+)(?:st|nd|rd|th)?/i, position: "match" as const },
+      {
+        regex: /(?:number\s+)?(\d+)(?:st|nd|rd|th)?/i,
+        position: "match" as const,
+      },
     ];
 
     for (const pattern of patterns) {
       const match = normalized.match(pattern.regex);
       if (match) {
-        let position = pattern.position === "match"
-          ? parseInt(match[1])
-          : pattern.position;
+        let position =
+          pattern.position === "match" ? parseInt(match[1]) : pattern.position;
 
         if (position === -1) {
           position = productList.length;
         }
 
-        const product = productList.find(p => p.position === position);
+        const product = productList.find((p) => p.position === position);
         if (product) {
           logger.debug(
-            { reference, position, productId: product.product_id, productName: product.name },
-            "Resolved ordinal reference"
+            {
+              reference,
+              position,
+              productId: product.product_id,
+              productName: product.name,
+            },
+            "Resolved ordinal reference",
           );
           return product;
         }
@@ -96,7 +107,7 @@ export class ProductContextManager {
 
     logger.warn(
       { reference, availablePositions: productList.length },
-      "Could not resolve ordinal reference"
+      "Could not resolve ordinal reference",
     );
     return null;
   }
@@ -108,6 +119,6 @@ export class ProductContextManager {
       /\b\d+(?:st|nd|rd|th)\b/i,
     ];
 
-    return ordinalPatterns.some(pattern => pattern.test(query));
+    return ordinalPatterns.some((pattern) => pattern.test(query));
   }
 }

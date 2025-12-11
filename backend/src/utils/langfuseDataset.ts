@@ -23,7 +23,7 @@ export interface TestCaseResult {
 
 export async function uploadTestCasesToDataset(
   datasetName: string,
-  testCases: GoldenTestCase[]
+  testCases: GoldenTestCase[],
 ): Promise<void> {
   const langfuse = getLangfuse();
   if (!langfuse) {
@@ -32,14 +32,26 @@ export async function uploadTestCasesToDataset(
 
   await safeLangfuseOperation(async (lf) => {
     // Create or get dataset
+    type LangfuseClient = typeof lf & {
+      getDataset?: (options: { datasetName: string }) => Promise<unknown>;
+      createDataset?: (options: {
+        datasetName: string;
+        description: string;
+      }) => Promise<unknown>;
+    };
+    const langfuseClient = lf as LangfuseClient;
     try {
-      await (lf as any).getDataset({ datasetName });
-    } catch (error) {
+      if (langfuseClient.getDataset) {
+        await langfuseClient.getDataset({ datasetName });
+      }
+    } catch {
       // Dataset doesn't exist, create it
-      await (lf as any).createDataset({
-        datasetName,
-        description: "Golden test cases for audio transcription evaluation",
-      });
+      if (langfuseClient.createDataset) {
+        await langfuseClient.createDataset({
+          datasetName,
+          description: "Golden test cases for audio transcription evaluation",
+        });
+      }
     }
 
     // Upload test cases as dataset items
@@ -63,14 +75,16 @@ export async function uploadTestCasesToDataset(
       }
     }
 
-    console.log(`Uploaded ${testCases.length} test cases to dataset: ${datasetName}`);
+    console.log(
+      `Uploaded ${testCases.length} test cases to dataset: ${datasetName}`,
+    );
   });
 }
 
 export function evaluateTranscription(
   expectedTranscript: string,
   actualTranscript: string,
-  threshold: number = 0.15
+  threshold: number = 0.15,
 ): TestCaseResult {
   const wer = calculateWER(expectedTranscript, actualTranscript);
   const passed = wer.wer <= threshold;
@@ -90,13 +104,13 @@ export async function runEvaluation(
   traceId: string,
   testCase: GoldenTestCase,
   actualTranscript: string,
-  threshold: number
+  threshold: number,
 ): Promise<TestCaseResult> {
   const langfuse = getLangfuse();
   const result = evaluateTranscription(
     testCase.expectedTranscript,
     actualTranscript,
-    threshold
+    threshold,
   );
 
   result.testCaseId = testCase.id;
@@ -141,7 +155,7 @@ export async function batchEvaluate(
     actualTranscript: string;
     traceId?: string;
   }>,
-  thresholds: Record<string, number>
+  thresholds: Record<string, number>,
 ): Promise<TestCaseResult[]> {
   const results: TestCaseResult[] = [];
 
@@ -150,12 +164,17 @@ export async function batchEvaluate(
     let result: TestCaseResult;
 
     if (traceId) {
-      result = await runEvaluation(traceId, testCase, actualTranscript, threshold);
+      result = await runEvaluation(
+        traceId,
+        testCase,
+        actualTranscript,
+        threshold,
+      );
     } else {
       result = evaluateTranscription(
         testCase.expectedTranscript,
         actualTranscript,
-        threshold
+        threshold,
       );
       result.testCaseId = testCase.id;
       result.category = testCase.category;
@@ -167,27 +186,30 @@ export async function batchEvaluate(
   return results;
 }
 
-export function generateEvaluationReport(
-  results: TestCaseResult[]
-): {
+export function generateEvaluationReport(results: TestCaseResult[]): {
   total: number;
   passed: number;
   failed: number;
   averageWER: number;
   averageAccuracy: number;
-  byCategory: Record<string, { passed: number; failed: number; averageWER: number }>;
+  byCategory: Record<
+    string,
+    { passed: number; failed: number; averageWER: number }
+  >;
 } {
   const total = results.length;
   const passed = results.filter((r) => r.passed).length;
   const failed = total - passed;
-  const averageWER =
-    results.reduce((sum, r) => sum + r.wer.wer, 0) / total;
+  const averageWER = results.reduce((sum, r) => sum + r.wer.wer, 0) / total;
   const averageAccuracy =
     results.reduce((sum, r) => sum + r.wer.accuracy, 0) / total;
 
   // Group by category
-  const byCategory: Record<string, { passed: number; failed: number; averageWER: number }> = {};
-  
+  const byCategory: Record<
+    string,
+    { passed: number; failed: number; averageWER: number }
+  > = {};
+
   for (const result of results) {
     if (!byCategory[result.category]) {
       byCategory[result.category] = { passed: 0, failed: 0, averageWER: 0 };
@@ -203,7 +225,8 @@ export function generateEvaluationReport(
   for (const category in byCategory) {
     const categoryResults = results.filter((r) => r.category === category);
     byCategory[category].averageWER =
-      categoryResults.reduce((sum, r) => sum + r.wer.wer, 0) / categoryResults.length;
+      categoryResults.reduce((sum, r) => sum + r.wer.wer, 0) /
+      categoryResults.length;
   }
 
   return {

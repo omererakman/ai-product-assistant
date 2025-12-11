@@ -3,9 +3,7 @@ import { VectorStore } from "@langchain/core/vectorstores";
 import { getConfig } from "../config/env.js";
 import { logger } from "../logger.js";
 
-export function createMMRRetriever(
-  vectorStore: VectorStore,
-): BaseRetriever {
+export function createMMRRetriever(vectorStore: VectorStore): BaseRetriever {
   const config = getConfig();
 
   const retriever = vectorStore.asRetriever({

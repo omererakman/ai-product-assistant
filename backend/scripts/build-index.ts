@@ -28,7 +28,7 @@ async function buildIndex() {
     // Validate chunk sizes
     const config = getConfig();
     const invalidChunks = chunks.filter(
-      (chunk) => chunk.pageContent.length < config.minChunkSize
+      (chunk) => chunk.pageContent.length < config.minChunkSize,
     );
 
     if (invalidChunks.length > 0) {
@@ -46,7 +46,7 @@ async function buildIndex() {
       );
       throw new Error(
         `Indexing failed: ${invalidChunks.length} chunk(s) are below MIN_CHUNK_SIZE (${config.minChunkSize} characters). ` +
-          `Smallest chunk size: ${Math.min(...invalidChunks.map((c) => c.pageContent.length))} characters.`
+          `Smallest chunk size: ${Math.min(...invalidChunks.map((c) => c.pageContent.length))} characters.`,
       );
     }
 

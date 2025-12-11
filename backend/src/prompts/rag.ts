@@ -1,4 +1,8 @@
-import { ChatPromptTemplate, MessagesPlaceholder } from "@langchain/core/prompts";
+import {
+  ChatPromptTemplate,
+  MessagesPlaceholder,
+} from "@langchain/core/prompts";
+import { LANGUAGE_NAMES, type LanguageCode } from "../constants/languages.js";
 
 export const ragPrompt = ChatPromptTemplate.fromMessages([
   [
@@ -34,13 +38,12 @@ If multiple products match, list them briefly with names and prices, then ask wh
   ["human", "Context:\n{context}\n\nQuestion: {question}\n\nAnswer:"],
 ]);
 
-import { LANGUAGE_NAMES } from "../constants/languages.js";
-
 export function createRAGPromptWithHistory(language?: string) {
-  const languageInstruction = language && LANGUAGE_NAMES[language as keyof typeof LANGUAGE_NAMES]
-    ? `\n\nLANGUAGE SETTING: The user's language is set to ${LANGUAGE_NAMES[language as keyof typeof LANGUAGE_NAMES]}. Respond ONLY in ${LANGUAGE_NAMES[language as keyof typeof LANGUAGE_NAMES]}.`
-    : '';
-  
+  const languageInstruction =
+    language && language in LANGUAGE_NAMES
+      ? `\n\nLANGUAGE SETTING: The user's language is set to ${LANGUAGE_NAMES[language as LanguageCode]}. Respond ONLY in ${LANGUAGE_NAMES[language as LanguageCode]}.`
+      : "";
+
   return ChatPromptTemplate.fromMessages([
     [
       "system",

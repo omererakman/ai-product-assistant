@@ -5,7 +5,9 @@ import { getConfig } from "../config/env.js";
 import { createOpenAIEmbeddings } from "../embeddings/index.js";
 import { logger } from "../logger.js";
 
-function createChromaClient(config: ReturnType<typeof getConfig>): ChromaClient {
+function createChromaClient(
+  config: ReturnType<typeof getConfig>,
+): ChromaClient {
   return new ChromaClient({
     host: config.chromaHost,
     port: config.chromaPort,
@@ -63,10 +65,7 @@ export async function createChromaVectorStore(
         index: client,
       });
     } else {
-      logger.debug(
-        { collectionName },
-        "Loading existing ChromaDB collection",
-      );
+      logger.debug({ collectionName }, "Loading existing ChromaDB collection");
 
       return await Chroma.fromExistingCollection(embeddings, {
         collectionName,
@@ -88,8 +87,11 @@ export async function loadChromaVectorStore(
   const embeddings = createOpenAIEmbeddings(config);
 
   try {
-    logger.debug({ collectionName, host: config.chromaHost, port: config.chromaPort }, "Connecting to ChromaDB");
-    
+    logger.debug(
+      { collectionName, host: config.chromaHost, port: config.chromaPort },
+      "Connecting to ChromaDB",
+    );
+
     const client = createChromaClient(config);
     logger.debug("ChromaDB client created, proceeding to load collection");
 
@@ -99,17 +101,20 @@ export async function loadChromaVectorStore(
       collectionName,
       index: client,
     });
-    
+
     logger.debug({ collectionName }, "ChromaDB collection loaded successfully");
     return vectorStore;
   } catch (error) {
-    logger.error({ 
-      error, 
-      collectionName,
-      host: config.chromaHost,
-      port: config.chromaPort,
-      errorMessage: error instanceof Error ? error.message : String(error)
-    }, "Failed to load ChromaDB vector store");
+    logger.error(
+      {
+        error,
+        collectionName,
+        host: config.chromaHost,
+        port: config.chromaPort,
+        errorMessage: error instanceof Error ? error.message : String(error),
+      },
+      "Failed to load ChromaDB vector store",
+    );
     throw new Error(
       `Failed to load ChromaDB vector store: ${error instanceof Error ? error.message : String(error)}. Make sure ChromaDB is running at ${config.chromaHost}:${config.chromaPort}`,
     );

@@ -8,7 +8,13 @@ import { loadChromaVectorStore } from "./vector-stores/index.js";
 import { RAGAgent } from "./agents/rag-agent.js";
 import { OrderAgent } from "./agents/order-agent.js";
 import { Orchestrator, OrchestratorResponse } from "./orchestrator/index.js";
-import { createDatabase, getOrderById, getAllOrders, cancelOrder, deleteOrder } from "./database/index.js";
+import {
+  createDatabase,
+  getOrderById,
+  getAllOrders,
+  cancelOrder,
+  deleteOrder,
+} from "./database/index.js";
 import { getLangfuse, safeLangfuseOperation } from "./utils/langfuse.js";
 import {
   calculateAudioQualityMetrics,
@@ -42,7 +48,11 @@ const upload = multer({
   limits: {
     fileSize: 25 * 1024 * 1024,
   },
-  fileFilter: (_req: express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+  fileFilter: (
+    _req: express.Request,
+    file: Express.Multer.File,
+    cb: multer.FileFilterCallback,
+  ) => {
     const allowedMimes = [
       "audio/webm",
       "audio/wav",
@@ -59,14 +69,34 @@ const upload = multer({
       "audio/mpga",
       "video/webm",
     ];
-    
-    const allowedExtensions = [".webm", ".wav", ".mp3", ".mp4", ".m4a", ".ogg", ".oga", ".flac", ".mpga", ".mpeg"];
-    const fileExtension = file.originalname.toLowerCase().substring(file.originalname.lastIndexOf("."));
-    
-    if (allowedMimes.includes(file.mimetype) || allowedExtensions.includes(fileExtension)) {
+
+    const allowedExtensions = [
+      ".webm",
+      ".wav",
+      ".mp3",
+      ".mp4",
+      ".m4a",
+      ".ogg",
+      ".oga",
+      ".flac",
+      ".mpga",
+      ".mpeg",
+    ];
+    const fileExtension = file.originalname
+      .toLowerCase()
+      .substring(file.originalname.lastIndexOf("."));
+
+    if (
+      allowedMimes.includes(file.mimetype) ||
+      allowedExtensions.includes(fileExtension)
+    ) {
       cb(null, true);
     } else {
-      cb(new Error(`Invalid file type. Received: ${file.mimetype}, filename: ${file.originalname}. Supported formats: flac, m4a, mp3, mp4, mpeg, mpga, oga, ogg, wav, webm`));
+      cb(
+        new Error(
+          `Invalid file type. Received: ${file.mimetype}, filename: ${file.originalname}. Supported formats: flac, m4a, mp3, mp4, mpeg, mpga, oga, ogg, wav, webm`,
+        ),
+      );
     }
   },
 });
@@ -100,11 +130,11 @@ app.get("/health", (_req, res) => {
 });
 
 app.get("/api/tts/health", (_req, res) => {
-  res.json({ 
-    status: "ok", 
+  res.json({
+    status: "ok",
     supported: true,
     provider: "openai",
-    voices: ["alloy", "echo", "fable", "onyx", "nova", "shimmer"]
+    voices: ["alloy", "echo", "fable", "onyx", "nova", "shimmer"],
   });
 });
 
@@ -113,435 +143,506 @@ app.post(
   rateLimitMiddleware(transcribeRateLimiter, "transcribe"),
   upload.single("audio"),
   async (req, res) => {
-  const langfuse = getLangfuse();
-  const traceId = req.headers["x-langfuse-trace-id"] as string | undefined;
-  const sessionId = req.headers["x-session-id"] as string | undefined;
-  
-  const trace = traceId && langfuse
-    ? langfuse.trace({ id: traceId, name: "audio-transcription" })
-    : langfuse?.trace({
-        name: "audio-transcription",
-        metadata: { sessionId: sessionId || "unknown" },
-      });
+    const langfuse = getLangfuse();
+    const traceId = req.headers["x-langfuse-trace-id"] as string | undefined;
+    const sessionId = req.headers["x-session-id"] as string | undefined;
 
-  const transcriptionSpan = trace?.span({
-    name: "transcription",
-    metadata: {
-      endpoint: "/api/transcribe",
-    },
-  });
+    const trace =
+      traceId && langfuse
+        ? langfuse.trace({ id: traceId, name: "audio-transcription" })
+        : langfuse?.trace({
+            name: "audio-transcription",
+            metadata: { sessionId: sessionId || "unknown" },
+          });
 
-  const startTime = Date.now();
-
-  try {
-    if (!req.file) {
-      transcriptionSpan?.update({
-        level: "ERROR",
-        metadata: { error: "Audio file is required" },
-      });
-      trace?.update({ metadata: { error: "Audio file is required", status: "ERROR" } });
-      return res.status(400).json({ error: "Audio file is required" });
-    }
-
-    const file = req.file;
-    const language = (req.body?.language as string) || undefined;
-
-    const mimeToExtension: Record<string, string> = {
-      "audio/webm": ".webm",
-      "video/webm": ".webm",
-      "audio/wav": ".wav",
-      "audio/x-wav": ".wav",
-      "audio/mpeg": ".mp3",
-      "audio/mp3": ".mp3",
-      "audio/mp4": ".mp4",
-      "audio/ogg": ".ogg",
-      "audio/flac": ".flac",
-      "audio/x-flac": ".flac",
-      "audio/x-m4a": ".m4a",
-      "audio/m4a": ".m4a",
-      "audio/mpga": ".mpga",
-      "audio/oga": ".oga",
-    };
-
-    const extension = mimeToExtension[file.mimetype] || ".webm";
-    
-    let filename = file.originalname;
-    if (!filename.toLowerCase().endsWith(extension.toLowerCase())) {
-      const nameWithoutExt = filename.replace(/\.[^/.]+$/, "");
-      filename = `${nameWithoutExt}${extension}`;
-    }
-
-    const audioMetadata: AudioMetadata = {
-      mimeType: file.mimetype,
-      fileSize: file.size,
-    };
-
-    const qualityMetrics = calculateAudioQualityMetrics(audioMetadata);
-    const qualityAssessment = getQualityAssessment(qualityMetrics);
-
-    logger.debug(
-      {
-        filename: file.originalname,
-        normalizedFilename: filename,
-        mimetype: file.mimetype,
-        size: file.size,
-        qualityScore: qualityMetrics.qualityScore,
-        qualityLevel: qualityAssessment.level,
-      },
-      "Received audio file for transcription",
-    );
-
-    transcriptionSpan?.update({
+    const transcriptionSpan = trace?.span({
+      name: "transcription",
       metadata: {
-        audioQuality: {
-          qualityScore: qualityMetrics.qualityScore,
-          qualityLevel: qualityAssessment.level,
-          snr: qualityMetrics.snr,
-          rms: qualityMetrics.rms,
-          fileSize: qualityMetrics.fileSize,
-          mimeType: file.mimetype,
-        },
+        endpoint: "/api/transcribe",
       },
     });
 
-    if (langfuse) {
-      safeLangfuseOperation(async () => {
-        trace?.score({
-          name: "audio-quality",
-          value: qualityMetrics.qualityScore,
-          comment: qualityAssessment.message,
+    const startTime = Date.now();
+
+    try {
+      if (!req.file) {
+        transcriptionSpan?.update({
+          level: "ERROR",
+          metadata: { error: "Audio file is required" },
         });
-      });
-    }
+        trace?.update({
+          metadata: { error: "Audio file is required", status: "ERROR" },
+        });
+        return res.status(400).json({ error: "Audio file is required" });
+      }
 
-    if (!isAudioQualityAcceptable(qualityMetrics)) {
-      logger.warn(
-        {
-          qualityScore: qualityMetrics.qualityScore,
-          suggestions: qualityAssessment.suggestions,
-        },
-        "Audio quality is below optimal threshold",
-      );
-    }
+      const file = req.file;
+      const language = (req.body?.language as string) || undefined;
 
-    let audioFile: File | Blob;
-    
-    if (typeof File !== 'undefined') {
-      audioFile = new File([file.buffer], filename, {
-        type: file.mimetype,
-      });
-    } else {
-      audioFile = new Blob([file.buffer], { type: file.mimetype });
-      (audioFile as any).name = filename;
-    }
+      const mimeToExtension: Record<string, string> = {
+        "audio/webm": ".webm",
+        "video/webm": ".webm",
+        "audio/wav": ".wav",
+        "audio/x-wav": ".wav",
+        "audio/mpeg": ".mp3",
+        "audio/mp3": ".mp3",
+        "audio/mp4": ".mp4",
+        "audio/ogg": ".ogg",
+        "audio/flac": ".flac",
+        "audio/x-flac": ".flac",
+        "audio/x-m4a": ".m4a",
+        "audio/m4a": ".m4a",
+        "audio/mpga": ".mpga",
+        "audio/oga": ".oga",
+      };
 
-    const uploadTime = Date.now() - startTime;
+      const extension = mimeToExtension[file.mimetype] || ".webm";
 
-    const generation = trace?.generation({
-      name: "whisper-transcription",
-      model: "whisper-1",
-      modelParameters: {
-        language: language || "auto-detect",
-        response_format: "json",
-      },
-      input: {
-        filename: filename,
-        originalFilename: file.originalname,
+      let filename = file.originalname;
+      if (!filename.toLowerCase().endsWith(extension.toLowerCase())) {
+        const nameWithoutExt = filename.replace(/\.[^/.]+$/, "");
+        filename = `${nameWithoutExt}${extension}`;
+      }
+
+      const audioMetadata: AudioMetadata = {
         mimeType: file.mimetype,
         fileSize: file.size,
-        qualityScore: qualityMetrics.qualityScore,
-        language: language || "auto-detect",
-      },
-    });
+      };
 
-    const apiStartTime = Date.now();
-    
-    logger.debug(
-      {
-        filename: filename,
-        mimetype: file.mimetype,
-        fileSize: file.size,
-        fileType: audioFile instanceof File ? "File" : "Blob",
-        language: language || "auto-detect",
-      },
-      language ? `Sending file to OpenAI Whisper API (language: ${language})` : "Sending file to OpenAI Whisper API (auto-detect language)",
-    );
-    
-    const transcriptionParams: any = {
-      file: audioFile as any,
-      model: "whisper-1",
-      response_format: "json",
-    };
-    
-    if (language) {
-      transcriptionParams.language = language;
-    }
-    
-    const transcription = await openai.audio.transcriptions.create(transcriptionParams);
-    const apiProcessingTime = Date.now() - apiStartTime;
+      const qualityMetrics = calculateAudioQualityMetrics(audioMetadata);
+      const qualityAssessment = getQualityAssessment(qualityMetrics);
 
-    const totalLatency = Date.now() - startTime;
-
-    generation?.end({
-      output: {
-        transcript: transcription.text,
-        language: (transcription as any).language || "auto-detected",
-        transcriptLength: transcription.text.length,
-      },
-      usage: {
-        total: Math.ceil(transcription.text.length / 4),
-        unit: "TOKENS" as const,
-      },
-    });
-
-    logger.debug(
-      {
-        transcriptLength: transcription.text.length,
-        latency: totalLatency,
-        qualityScore: qualityMetrics.qualityScore,
-      },
-      "Transcription completed",
-    );
-
-    transcriptionSpan?.update({
-      metadata: {
-        latency: {
-          uploadTime,
-          apiProcessingTime,
-          totalLatency,
+      logger.debug(
+        {
+          filename: file.originalname,
+          normalizedFilename: filename,
+          mimetype: file.mimetype,
+          size: file.size,
+          qualityScore: qualityMetrics.qualityScore,
+          qualityLevel: qualityAssessment.level,
         },
-        transcriptLength: transcription.text.length,
-        language: (transcription as any).language || "auto-detected",
-      },
-    });
+        "Received audio file for transcription",
+      );
 
-    return res.json({
-      transcript: transcription.text,
-      language: (transcription as any).language || "auto-detected",
-      qualityScore: qualityMetrics.qualityScore,
-      qualityLevel: qualityAssessment.level,
-    });
-  } catch (error: any) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    const errorDetails = error instanceof Error ? error.stack : undefined;
-    
-    const isFileFormatError = error?.error?.message?.includes("Invalid file format") || 
-                              error?.message?.includes("Invalid file format");
-    
-    const openAIError = error?.error || error;
-    const detailedMessage = openAIError?.message || errorMessage;
+      transcriptionSpan?.update({
+        metadata: {
+          audioQuality: {
+            qualityScore: qualityMetrics.qualityScore,
+            qualityLevel: qualityAssessment.level,
+            snr: qualityMetrics.snr,
+            rms: qualityMetrics.rms,
+            fileSize: qualityMetrics.fileSize,
+            mimeType: file.mimetype,
+          },
+        },
+      });
 
-    logger.error(
-      {
-        error: errorMessage,
-        openAIError: openAIError?.message,
-        filename: req.file?.originalname,
-        mimetype: req.file?.mimetype,
-        isFileFormatError,
-      },
-      "Error transcribing audio",
-    );
+      if (langfuse) {
+        safeLangfuseOperation(async () => {
+          trace?.score({
+            name: "audio-quality",
+            value: qualityMetrics.qualityScore,
+            comment: qualityAssessment.message,
+          });
+        });
+      }
 
-    transcriptionSpan?.update({
-      level: "ERROR",
-      metadata: {
-        error: detailedMessage,
-        errorType: isFileFormatError ? "INVALID_FILE_FORMAT" : "TRANSCRIPTION_ERROR",
-        filename: req.file?.originalname,
-        mimetype: req.file?.mimetype,
-        errorDetails,
-      },
-    });
+      if (!isAudioQualityAcceptable(qualityMetrics)) {
+        logger.warn(
+          {
+            qualityScore: qualityMetrics.qualityScore,
+            suggestions: qualityAssessment.suggestions,
+          },
+          "Audio quality is below optimal threshold",
+        );
+      }
 
-    trace?.update({
-      metadata: { error: detailedMessage, errorType: isFileFormatError ? "INVALID_FILE_FORMAT" : "TRANSCRIPTION_ERROR" },
-    });
+      let audioFile: File | Blob;
 
-    const statusCode = isFileFormatError ? 400 : 500;
-    
-    return res.status(statusCode).json({
-      error: isFileFormatError ? "Invalid file format" : "Failed to transcribe audio",
-      message: detailedMessage,
-      supportedFormats: ["flac", "m4a", "mp3", "mp4", "mpeg", "mpga", "oga", "ogg", "wav", "webm"],
-    });
-  } finally {
-    transcriptionSpan?.end();
-  }
-});
+      if (typeof File !== "undefined") {
+        audioFile = new File([file.buffer], filename, {
+          type: file.mimetype,
+        });
+      } else {
+        audioFile = new Blob([file.buffer], { type: file.mimetype });
+        // Blob doesn't have a name property, but OpenAI API accepts Blob
+        Object.defineProperty(audioFile, "name", {
+          value: filename,
+          writable: false,
+        });
+      }
+
+      const uploadTime = Date.now() - startTime;
+
+      const generation = trace?.generation({
+        name: "whisper-transcription",
+        model: "whisper-1",
+        modelParameters: {
+          language: language || "auto-detect",
+          response_format: "json",
+        },
+        input: {
+          filename: filename,
+          originalFilename: file.originalname,
+          mimeType: file.mimetype,
+          fileSize: file.size,
+          qualityScore: qualityMetrics.qualityScore,
+          language: language || "auto-detect",
+        },
+      });
+
+      const apiStartTime = Date.now();
+
+      logger.debug(
+        {
+          filename: filename,
+          mimetype: file.mimetype,
+          fileSize: file.size,
+          fileType: audioFile instanceof File ? "File" : "Blob",
+          language: language || "auto-detect",
+        },
+        language
+          ? `Sending file to OpenAI Whisper API (language: ${language})`
+          : "Sending file to OpenAI Whisper API (auto-detect language)",
+      );
+
+      const transcriptionParams: {
+        file: File | Blob;
+        model: string;
+        response_format: "json";
+        language?: string;
+      } = {
+        file: audioFile,
+        model: "whisper-1",
+        response_format: "json",
+      };
+
+      if (language) {
+        transcriptionParams.language = language;
+      }
+
+      const transcription =
+        await openai.audio.transcriptions.create(transcriptionParams);
+      const apiProcessingTime = Date.now() - apiStartTime;
+
+      const totalLatency = Date.now() - startTime;
+
+      const transcriptionLanguage =
+        "language" in transcription &&
+        typeof transcription.language === "string"
+          ? transcription.language
+          : "auto-detected";
+
+      generation?.end({
+        output: {
+          transcript: transcription.text,
+          language: transcriptionLanguage,
+          transcriptLength: transcription.text.length,
+        },
+        usage: {
+          total: Math.ceil(transcription.text.length / 4),
+          unit: "TOKENS" as const,
+        },
+      });
+
+      logger.debug(
+        {
+          transcriptLength: transcription.text.length,
+          latency: totalLatency,
+          qualityScore: qualityMetrics.qualityScore,
+        },
+        "Transcription completed",
+      );
+
+      transcriptionSpan?.update({
+        metadata: {
+          latency: {
+            uploadTime,
+            apiProcessingTime,
+            totalLatency,
+          },
+          transcriptLength: transcription.text.length,
+          language: transcriptionLanguage,
+        },
+      });
+
+      return res.json({
+        transcript: transcription.text,
+        language: transcriptionLanguage,
+        qualityScore: qualityMetrics.qualityScore,
+        qualityLevel: qualityAssessment.level,
+      });
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      const errorDetails = error instanceof Error ? error.stack : undefined;
+
+      // Type guard for OpenAI error structure
+      const isOpenAIError = (
+        err: unknown,
+      ): err is { error?: { message?: string }; message?: string } => {
+        return (
+          typeof err === "object" &&
+          err !== null &&
+          ("error" in err || "message" in err)
+        );
+      };
+
+      const isFileFormatError = isOpenAIError(error)
+        ? error.error?.message?.includes("Invalid file format") ||
+          error.message?.includes("Invalid file format")
+        : false;
+
+      const openAIError = isOpenAIError(error) ? error.error || error : null;
+      const detailedMessage =
+        (isOpenAIError(openAIError) && openAIError?.message) ||
+        (isOpenAIError(error) && error?.message) ||
+        errorMessage;
+
+      logger.error(
+        {
+          error: errorMessage,
+          openAIError: openAIError?.message,
+          filename: req.file?.originalname,
+          mimetype: req.file?.mimetype,
+          isFileFormatError,
+        },
+        "Error transcribing audio",
+      );
+
+      transcriptionSpan?.update({
+        level: "ERROR",
+        metadata: {
+          error: detailedMessage,
+          errorType: isFileFormatError
+            ? "INVALID_FILE_FORMAT"
+            : "TRANSCRIPTION_ERROR",
+          filename: req.file?.originalname,
+          mimetype: req.file?.mimetype,
+          errorDetails,
+        },
+      });
+
+      trace?.update({
+        metadata: {
+          error: detailedMessage,
+          errorType: isFileFormatError
+            ? "INVALID_FILE_FORMAT"
+            : "TRANSCRIPTION_ERROR",
+        },
+      });
+
+      const statusCode = isFileFormatError ? 400 : 500;
+
+      return res.status(statusCode).json({
+        error: isFileFormatError
+          ? "Invalid file format"
+          : "Failed to transcribe audio",
+        message: detailedMessage,
+        supportedFormats: [
+          "flac",
+          "m4a",
+          "mp3",
+          "mp4",
+          "mpeg",
+          "mpga",
+          "oga",
+          "ogg",
+          "wav",
+          "webm",
+        ],
+      });
+    } finally {
+      transcriptionSpan?.end();
+    }
+  },
+);
 
 app.post(
   "/api/tts/stream",
   rateLimitMiddleware(ttsRateLimiter, "tts-stream"),
   inputValidationMiddleware(10000, "text"),
   async (req, res) => {
-  const langfuse = getLangfuse();
-  const { text, voice = "alloy", rate = 1.0 } = req.body;
-  const traceId = req.headers["x-langfuse-trace-id"] as string | undefined;
-  const sessionId = req.headers["x-session-id"] as string | undefined;
+    const langfuse = getLangfuse();
+    const { text, voice = "alloy", rate = 1.0 } = req.body;
+    const traceId = req.headers["x-langfuse-trace-id"] as string | undefined;
+    const sessionId = req.headers["x-session-id"] as string | undefined;
 
-  const trace = traceId && langfuse
-    ? langfuse.trace({ id: traceId, name: "text-to-speech-stream" })
-    : langfuse?.trace({
-        name: "text-to-speech-stream",
-        metadata: { sessionId: sessionId || "unknown" },
-      });
+    const trace =
+      traceId && langfuse
+        ? langfuse.trace({ id: traceId, name: "text-to-speech-stream" })
+        : langfuse?.trace({
+            name: "text-to-speech-stream",
+            metadata: { sessionId: sessionId || "unknown" },
+          });
 
-  const ttsSpan = trace?.span({
-    name: "tts-streaming",
-    metadata: {
-      endpoint: "/api/tts/stream",
-    },
-  });
-
-  const startTime = Date.now();
-
-  try {
-    if (!text || typeof text !== "string") {
-      ttsSpan?.update({
-        level: "ERROR",
-        metadata: { error: "Text is required" },
-      });
-      trace?.update({ metadata: { error: "Text is required" } });
-      return res.status(400).json({ error: "Text is required" });
-    }
-
-    const validVoices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"];
-    if (!validVoices.includes(voice)) {
-      ttsSpan?.update({
-        level: "ERROR",
-        metadata: { error: "Invalid voice", validVoices },
-      });
-      trace?.update({ metadata: { error: "Invalid voice" } });
-      return res.status(400).json({ 
-        error: "Invalid voice", 
-        validVoices 
-      });
-    }
-
-    const validatedRate = Math.max(0.25, Math.min(4.0, rate));
-
-    logger.debug(
-      {
-        textLength: text.length,
-        voice,
-        rate: validatedRate,
-      },
-      "Generating streaming speech with OpenAI TTS",
-    );
-
-    res.setHeader("Content-Type", "audio/mpeg");
-    res.setHeader("Transfer-Encoding", "chunked");
-    res.setHeader("Cache-Control", "no-cache");
-
-    const generation = trace?.generation({
-      name: "openai-tts-stream",
-      model: "tts-1-hd",
-      modelParameters: {
-        voice,
-        rate: validatedRate,
-      },
-      input: {
-        textLength: text.length,
-        textPreview: text.substring(0, 100),
-      },
-    });
-
-    const apiStartTime = Date.now();
-
-    const streamResponse = openai.audio.speech.create({
-      model: "tts-1-hd",
-      voice: voice as "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer",
-      input: text,
-      response_format: "mp3",
-    }, {
-      stream: true, // Enable streaming
-    });
-
-    let totalBytes = 0;
-    const response = await streamResponse;
-    if (response.body) {
-      const reader = response.body.getReader();
-      
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        
-        const buffer = Buffer.from(value);
-        totalBytes += buffer.length;
-        res.write(buffer);
-      }
-    }
-
-    const apiProcessingTime = Date.now() - apiStartTime;
-    const totalLatency = Date.now() - startTime;
-
-    generation?.end({
-      output: {
-        audioSize: totalBytes,
-        audioSizeKB: (totalBytes / 1024).toFixed(2),
-        bytesPerChar: (totalBytes / text.length).toFixed(2),
-      },
-      usage: {
-        total: Math.ceil(text.length / 4),
-        unit: "TOKENS" as const,
-      },
-    });
-
-    logger.debug(
-      {
-        audioSize: totalBytes,
-        textLength: text.length,
-        latency: totalLatency,
-      },
-      "Streaming TTS generation completed",
-    );
-
-    ttsSpan?.update({
+    const ttsSpan = trace?.span({
+      name: "tts-streaming",
       metadata: {
-        latency: {
-          apiProcessingTime,
-          totalLatency,
+        endpoint: "/api/tts/stream",
+      },
+    });
+
+    const startTime = Date.now();
+
+    try {
+      if (!text || typeof text !== "string") {
+        ttsSpan?.update({
+          level: "ERROR",
+          metadata: { error: "Text is required" },
+        });
+        trace?.update({ metadata: { error: "Text is required" } });
+        return res.status(400).json({ error: "Text is required" });
+      }
+
+      const validVoices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"];
+      if (!validVoices.includes(voice)) {
+        ttsSpan?.update({
+          level: "ERROR",
+          metadata: { error: "Invalid voice", validVoices },
+        });
+        trace?.update({ metadata: { error: "Invalid voice" } });
+        return res.status(400).json({
+          error: "Invalid voice",
+          validVoices,
+        });
+      }
+
+      const validatedRate = Math.max(0.25, Math.min(4.0, rate));
+
+      logger.debug(
+        {
+          textLength: text.length,
+          voice,
+          rate: validatedRate,
         },
-        audioMetrics: {
+        "Generating streaming speech with OpenAI TTS",
+      );
+
+      res.setHeader("Content-Type", "audio/mpeg");
+      res.setHeader("Transfer-Encoding", "chunked");
+      res.setHeader("Cache-Control", "no-cache");
+
+      const generation = trace?.generation({
+        name: "openai-tts-stream",
+        model: "tts-1-hd",
+        modelParameters: {
+          voice,
+          rate: validatedRate,
+        },
+        input: {
+          textLength: text.length,
+          textPreview: text.substring(0, 100),
+        },
+      });
+
+      const apiStartTime = Date.now();
+
+      const streamResponse = openai.audio.speech.create(
+        {
+          model: "tts-1-hd",
+          voice: voice as
+            | "alloy"
+            | "echo"
+            | "fable"
+            | "onyx"
+            | "nova"
+            | "shimmer",
+          input: text,
+          response_format: "mp3",
+        },
+        {
+          stream: true, // Enable streaming
+        },
+      );
+
+      let totalBytes = 0;
+      const response = await streamResponse;
+      if (response.body) {
+        const reader = response.body.getReader();
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const buffer = Buffer.from(value);
+          totalBytes += buffer.length;
+          res.write(buffer);
+        }
+      }
+
+      const apiProcessingTime = Date.now() - apiStartTime;
+      const totalLatency = Date.now() - startTime;
+
+      generation?.end({
+        output: {
+          audioSize: totalBytes,
+          audioSizeKB: (totalBytes / 1024).toFixed(2),
+          bytesPerChar: (totalBytes / text.length).toFixed(2),
+        },
+        usage: {
+          total: Math.ceil(text.length / 4),
+          unit: "TOKENS" as const,
+        },
+      });
+
+      logger.debug(
+        {
           audioSize: totalBytes,
           textLength: text.length,
+          latency: totalLatency,
         },
-        voice,
-        rate: validatedRate,
-      },
-    });
+        "Streaming TTS generation completed",
+      );
 
-    res.end();
-    return;
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    const errorDetails = error instanceof Error ? error.stack : undefined;
-
-    logger.error({ error }, "Error generating streaming speech");
-
-    ttsSpan?.update({
-      level: "ERROR",
-      metadata: {
-        error: errorMessage,
-        errorDetails,
-      },
-    });
-
-    trace?.update({
-      metadata: { error: errorMessage },
-    });
-
-    if (!res.headersSent) {
-      res.status(500).json({
-        error: "Failed to generate streaming speech",
-        message: errorMessage,
+      ttsSpan?.update({
+        metadata: {
+          latency: {
+            apiProcessingTime,
+            totalLatency,
+          },
+          audioMetrics: {
+            audioSize: totalBytes,
+            textLength: text.length,
+          },
+          voice,
+          rate: validatedRate,
+        },
       });
+
+      res.end();
+      return;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      const errorDetails = error instanceof Error ? error.stack : undefined;
+
+      logger.error({ error }, "Error generating streaming speech");
+
+      ttsSpan?.update({
+        level: "ERROR",
+        metadata: {
+          error: errorMessage,
+          errorDetails,
+        },
+      });
+
+      trace?.update({
+        metadata: { error: errorMessage },
+      });
+
+      if (!res.headersSent) {
+        res.status(500).json({
+          error: "Failed to generate streaming speech",
+          message: errorMessage,
+        });
+      }
+      return;
+    } finally {
+      ttsSpan?.end();
     }
-    return;
-  } finally {
-    ttsSpan?.end();
-  }
-});
+  },
+);
 
 // Text-to-Speech endpoint (non-streaming, for backward compatibility)
 app.post(
@@ -549,163 +650,172 @@ app.post(
   rateLimitMiddleware(ttsRateLimiter, "tts"),
   inputValidationMiddleware(10000, "text"),
   async (req, res) => {
-  const langfuse = getLangfuse();
-  const traceId = req.headers["x-langfuse-trace-id"] as string | undefined;
-  const sessionId = req.headers["x-session-id"] as string | undefined;
+    const langfuse = getLangfuse();
+    const traceId = req.headers["x-langfuse-trace-id"] as string | undefined;
+    const sessionId = req.headers["x-session-id"] as string | undefined;
 
-  const trace = traceId && langfuse
-    ? langfuse.trace({ id: traceId, name: "text-to-speech" })
-    : langfuse?.trace({
-        name: "text-to-speech",
-        metadata: { sessionId: sessionId || "unknown" },
-      });
+    const trace =
+      traceId && langfuse
+        ? langfuse.trace({ id: traceId, name: "text-to-speech" })
+        : langfuse?.trace({
+            name: "text-to-speech",
+            metadata: { sessionId: sessionId || "unknown" },
+          });
 
-  const ttsSpan = trace?.span({
-    name: "tts-generation",
-    metadata: {
-      endpoint: "/api/tts",
-    },
-  });
-
-  const startTime = Date.now();
-
-  try {
-    const { text, voice = "alloy", rate = 1.0 } = req.body;
-
-    if (!text || typeof text !== "string") {
-      ttsSpan?.update({
-        level: "ERROR",
-        metadata: { error: "Text is required" },
-      });
-      trace?.update({ metadata: { error: "Audio file is required" } });
-      return res.status(400).json({ error: "Text is required" });
-    }
-
-    const validVoices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"];
-    if (!validVoices.includes(voice)) {
-      ttsSpan?.update({
-        level: "ERROR",
-        metadata: { error: "Invalid voice", validVoices },
-      });
-      trace?.update({ metadata: { error: "Audio file is required" } });
-      return res.status(400).json({ 
-        error: "Invalid voice", 
-        validVoices 
-      });
-    }
-
-    const validatedRate = Math.max(0.25, Math.min(4.0, rate));
-
-    logger.debug(
-      {
-        textLength: text.length,
-        voice,
-        rate: validatedRate,
-      },
-      "Generating speech with OpenAI TTS",
-    );
-
-    const generation = trace?.generation({
-      name: "openai-tts",
-      model: "tts-1-hd",
-      modelParameters: {
-        voice,
-        rate: validatedRate,
-      },
-      input: {
-        textLength: text.length,
-        textPreview: text.substring(0, 100),
-      },
-    });
-
-    const apiStartTime = Date.now();
-
-    const mp3Response = await openai.audio.speech.create({
-      model: "tts-1-hd",
-      voice: voice as "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer",
-      input: text,
-    });
-
-    const apiProcessingTime = Date.now() - apiStartTime;
-
-    const buffer = Buffer.from(await mp3Response.arrayBuffer());
-    const totalLatency = Date.now() - startTime;
-
-    const audioSize = buffer.length;
-    const bytesPerChar = audioSize / text.length;
-    const estimatedDuration = audioSize / 16000;
-
-    generation?.end({
-      output: {
-        audioSize,
-        audioSizeKB: (audioSize / 1024).toFixed(2),
-        bytesPerChar: bytesPerChar.toFixed(2),
-        estimatedDuration: estimatedDuration.toFixed(2),
-      },
-      usage: {
-        total: Math.ceil(text.length / 4),
-        unit: "TOKENS" as const,
-      },
-    });
-
-    logger.debug(
-      {
-        audioSize: buffer.length,
-        textLength: text.length,
-        latency: totalLatency,
-        bytesPerChar: bytesPerChar.toFixed(2),
-      },
-      "TTS generation completed",
-    );
-
-    ttsSpan?.update({
+    const ttsSpan = trace?.span({
+      name: "tts-generation",
       metadata: {
-        latency: {
-          apiProcessingTime,
-          totalLatency,
-        },
-        audioMetrics: {
-          audioSize,
+        endpoint: "/api/tts",
+      },
+    });
+
+    const startTime = Date.now();
+
+    try {
+      const { text, voice = "alloy", rate = 1.0 } = req.body;
+
+      if (!text || typeof text !== "string") {
+        ttsSpan?.update({
+          level: "ERROR",
+          metadata: { error: "Text is required" },
+        });
+        trace?.update({ metadata: { error: "Audio file is required" } });
+        return res.status(400).json({ error: "Text is required" });
+      }
+
+      const validVoices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"];
+      if (!validVoices.includes(voice)) {
+        ttsSpan?.update({
+          level: "ERROR",
+          metadata: { error: "Invalid voice", validVoices },
+        });
+        trace?.update({ metadata: { error: "Audio file is required" } });
+        return res.status(400).json({
+          error: "Invalid voice",
+          validVoices,
+        });
+      }
+
+      const validatedRate = Math.max(0.25, Math.min(4.0, rate));
+
+      logger.debug(
+        {
           textLength: text.length,
+          voice,
+          rate: validatedRate,
+        },
+        "Generating speech with OpenAI TTS",
+      );
+
+      const generation = trace?.generation({
+        name: "openai-tts",
+        model: "tts-1-hd",
+        modelParameters: {
+          voice,
+          rate: validatedRate,
+        },
+        input: {
+          textLength: text.length,
+          textPreview: text.substring(0, 100),
+        },
+      });
+
+      const apiStartTime = Date.now();
+
+      const mp3Response = await openai.audio.speech.create({
+        model: "tts-1-hd",
+        voice: voice as
+          | "alloy"
+          | "echo"
+          | "fable"
+          | "onyx"
+          | "nova"
+          | "shimmer",
+        input: text,
+      });
+
+      const apiProcessingTime = Date.now() - apiStartTime;
+
+      const buffer = Buffer.from(await mp3Response.arrayBuffer());
+      const totalLatency = Date.now() - startTime;
+
+      const audioSize = buffer.length;
+      const bytesPerChar = audioSize / text.length;
+      const estimatedDuration = audioSize / 16000;
+
+      generation?.end({
+        output: {
+          audioSize,
+          audioSizeKB: (audioSize / 1024).toFixed(2),
           bytesPerChar: bytesPerChar.toFixed(2),
           estimatedDuration: estimatedDuration.toFixed(2),
         },
-        voice,
-        rate: validatedRate,
-      },
-    });
+        usage: {
+          total: Math.ceil(text.length / 4),
+          unit: "TOKENS" as const,
+        },
+      });
 
-    res.setHeader("Content-Type", "audio/mpeg");
-    res.setHeader("Content-Length", buffer.length);
-    res.setHeader("Cache-Control", "public, max-age=3600");
+      logger.debug(
+        {
+          audioSize: buffer.length,
+          textLength: text.length,
+          latency: totalLatency,
+          bytesPerChar: bytesPerChar.toFixed(2),
+        },
+        "TTS generation completed",
+      );
 
-    return res.send(buffer);
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    const errorDetails = error instanceof Error ? error.stack : undefined;
+      ttsSpan?.update({
+        metadata: {
+          latency: {
+            apiProcessingTime,
+            totalLatency,
+          },
+          audioMetrics: {
+            audioSize,
+            textLength: text.length,
+            bytesPerChar: bytesPerChar.toFixed(2),
+            estimatedDuration: estimatedDuration.toFixed(2),
+          },
+          voice,
+          rate: validatedRate,
+        },
+      });
 
-    logger.error({ error }, "Error generating speech");
+      res.setHeader("Content-Type", "audio/mpeg");
+      res.setHeader("Content-Length", buffer.length);
+      res.setHeader("Cache-Control", "public, max-age=3600");
 
-    ttsSpan?.update({
-      level: "ERROR",
-      metadata: {
-        error: errorMessage,
-        errorDetails,
-      },
-    });
+      return res.send(buffer);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      const errorDetails = error instanceof Error ? error.stack : undefined;
 
-    trace?.update({
-      metadata: { error: errorMessage },
-    });
+      logger.error({ error }, "Error generating speech");
 
-    return res.status(500).json({
-      error: "Failed to generate speech",
-      message: errorMessage,
-    });
-  } finally {
-    ttsSpan?.end();
-  }
-});
+      ttsSpan?.update({
+        level: "ERROR",
+        metadata: {
+          error: errorMessage,
+          errorDetails,
+        },
+      });
+
+      trace?.update({
+        metadata: { error: errorMessage },
+      });
+
+      return res.status(500).json({
+        error: "Failed to generate speech",
+        message: errorMessage,
+      });
+    } finally {
+      ttsSpan?.end();
+    }
+  },
+);
 
 app.post(
   "/api/chat/stream",
@@ -713,134 +823,226 @@ app.post(
   sessionValidationMiddleware,
   inputValidationMiddleware(5000, "message"),
   async (req, res) => {
-  const langfuse = getLangfuse();
-  const { message, sessionId = "default", language } = req.body;
-  const traceId = req.headers["x-langfuse-trace-id"] as string | undefined;
+    const langfuse = getLangfuse();
+    const { message, sessionId = "default", language } = req.body;
+    const traceId = req.headers["x-langfuse-trace-id"] as string | undefined;
 
-  res.setHeader("Content-Type", "text/event-stream");
-  res.setHeader("Cache-Control", "no-cache");
-  res.setHeader("Connection", "keep-alive");
-  res.setHeader("X-Accel-Buffering", "no");
-  res.flushHeaders();
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.setHeader("X-Accel-Buffering", "no");
+    res.flushHeaders();
 
-  const trace = traceId && langfuse
-    ? langfuse.trace({ id: traceId, name: "conversation-turn-stream" })
-    : langfuse?.trace({
-        name: "conversation-turn-stream",
-        metadata: { sessionId },
+    const trace =
+      traceId && langfuse
+        ? langfuse.trace({ id: traceId, name: "conversation-turn-stream" })
+        : langfuse?.trace({
+            name: "conversation-turn-stream",
+            metadata: { sessionId },
+          });
+
+    const chatSpan = trace?.span({
+      name: "chat-streaming",
+      metadata: {
+        endpoint: "/api/chat/stream",
+        sessionId,
+        messageLength: message?.length || 0,
+      },
+    });
+
+    const startTime = Date.now();
+
+    try {
+      if (!message || typeof message !== "string") {
+        res.write(
+          `data: ${JSON.stringify({
+            type: "error",
+            error: "Message is required",
+          })}\n\n`,
+        );
+        res.end();
+        return;
+      }
+
+      const orchestrator = await getOrchestrator(sessionId);
+      let finalResponse: OrchestratorResponse | null = null;
+
+      // Create adapter for Langfuse trace to match orchestrator interface
+      const traceAdapter = trace
+        ? {
+            span: (options: {
+              name: string;
+              metadata?: Record<string, unknown>;
+            }) => {
+              const span = trace.span(options);
+              return {
+                update: (opts?: { metadata?: Record<string, unknown> }) => {
+                  if (opts) span.update(opts);
+                },
+                end: (opts?: {
+                  output?: unknown;
+                  metadata?: Record<string, unknown>;
+                }) => {
+                  if (opts) span.end(opts);
+                },
+                span: (childOptions: {
+                  name: string;
+                  metadata?: Record<string, unknown>;
+                }) => {
+                  const childSpan = span.span(childOptions);
+                  return {
+                    update: (opts?: { metadata?: Record<string, unknown> }) => {
+                      if (opts) childSpan.update(opts);
+                    },
+                    end: (opts?: {
+                      output?: unknown;
+                      metadata?: Record<string, unknown>;
+                    }) => {
+                      if (opts) childSpan.end(opts);
+                    },
+                  };
+                },
+              };
+            },
+            generation: (options: {
+              name: string;
+              model?: string;
+              modelParameters?: Record<string, unknown>;
+              input?: Record<string, unknown>;
+            }) => {
+              const generation = trace.generation({
+                name: options.name,
+                model: options.model,
+                modelParameters: options.modelParameters as Record<
+                  string,
+                  string | number | boolean | string[] | null
+                >,
+                input: options.input,
+              });
+              return {
+                end: (opts?: { output?: unknown; usage?: unknown }) => {
+                  if (opts && opts.usage !== undefined) {
+                    generation.end({
+                      output: opts.output,
+                      usage: opts.usage,
+                    } as Parameters<typeof generation.end>[0]);
+                  } else if (opts) {
+                    generation.end({
+                      output: opts.output,
+                    } as Parameters<typeof generation.end>[0]);
+                  } else {
+                    generation.end();
+                  }
+                },
+              };
+            },
+          }
+        : undefined;
+
+      finalResponse = await orchestrator.processMessageStream(
+        message,
+        language,
+        (chunk) => {
+          const data = `data: ${JSON.stringify(chunk)}\n\n`;
+          res.write(data);
+
+          // Type guard for response with flush method (available in some Express setups)
+          type ResponseWithFlush = typeof res & { flush?: () => void };
+          const resWithFlush = res as ResponseWithFlush;
+          if (typeof resWithFlush.flush === "function") {
+            try {
+              resWithFlush.flush!();
+              setTimeout(() => {
+                try {
+                  resWithFlush.flush!();
+                } catch {
+                  // Ignore flush errors
+                }
+              }, 0);
+            } catch {
+              // Ignore flush errors
+            }
+          }
+
+          if (chunk.type === "token" && chunk.content) {
+            logger.debug(
+              {
+                token: chunk.content.substring(0, 30),
+                tokenLength: chunk.content.length,
+              },
+              "Sent token chunk to client",
+            );
+          }
+        },
+        traceAdapter,
+      );
+
+      const totalLatency = Date.now() - startTime;
+
+      res.write(
+        `data: ${JSON.stringify({
+          type: "done",
+          finalText: finalResponse.response,
+          agent: finalResponse.agent,
+          orderCreated: finalResponse.orderCreated,
+          orderId: finalResponse.orderId,
+        })}\n\n`,
+      );
+
+      trace?.update({
+        metadata: {
+          agent: finalResponse.agent,
+          orderCreated: finalResponse.orderCreated,
+          orderId: finalResponse.orderId,
+          sourcesCount: finalResponse.sources?.length || 0,
+          status: "OK",
+        },
       });
 
-  const chatSpan = trace?.span({
-    name: "chat-streaming",
-    metadata: {
-      endpoint: "/api/chat/stream",
-      sessionId,
-      messageLength: message?.length || 0,
-    },
-  });
+      chatSpan?.end({
+        metadata: {
+          agent: finalResponse.agent,
+          responseLength: finalResponse.response.length,
+          latency: totalLatency,
+        },
+      });
 
-  const startTime = Date.now();
-
-  try {
-    if (!message || typeof message !== "string") {
-      res.write(`data: ${JSON.stringify({ 
-        type: "error", 
-        error: "Message is required" 
-      })}\n\n`);
       res.end();
-      return;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      const errorDetails = error instanceof Error ? error.stack : undefined;
+
+      logger.error(
+        { error, errorDetails },
+        "Error processing streaming chat message",
+      );
+
+      res.write(
+        `data: ${JSON.stringify({
+          type: "error",
+          error: errorMessage,
+          details: errorDetails,
+        })}\n\n`,
+      );
+      res.end();
+
+      chatSpan?.update({
+        level: "ERROR",
+        metadata: {
+          error: errorMessage,
+          errorDetails,
+        },
+      });
+
+      trace?.update({
+        metadata: { error: errorMessage },
+      });
+    } finally {
+      chatSpan?.end();
     }
-
-    const orchestrator = await getOrchestrator(sessionId);
-    let finalResponse: OrchestratorResponse | null = null;
-
-    finalResponse = await orchestrator.processMessageStream(
-      message,
-      language,
-      (chunk) => {
-        const data = `data: ${JSON.stringify(chunk)}\n\n`;
-        res.write(data);
-        
-        if (typeof (res as any).flush === 'function') {
-          try {
-            (res as any).flush();
-            setTimeout(() => {
-              try {
-                (res as any).flush();
-              } catch (e) {
-              }
-            }, 0);
-          } catch (e) {
-          }
-        }
-        
-        if (chunk.type === 'token' && chunk.content) {
-          logger.debug({ 
-            token: chunk.content.substring(0, 30),
-            tokenLength: chunk.content.length 
-          }, "Sent token chunk to client");
-        }
-      },
-      trace || undefined
-    );
-
-    const totalLatency = Date.now() - startTime;
-
-    res.write(`data: ${JSON.stringify({ 
-      type: "done",
-      finalText: finalResponse.response,
-      agent: finalResponse.agent,
-      orderCreated: finalResponse.orderCreated,
-      orderId: finalResponse.orderId,
-    })}\n\n`);
-
-    trace?.update({
-      metadata: {
-        agent: finalResponse.agent,
-        orderCreated: finalResponse.orderCreated,
-        orderId: finalResponse.orderId,
-        sourcesCount: finalResponse.sources?.length || 0,
-        status: "OK",
-      },
-    });
-
-    chatSpan?.end({
-      metadata: {
-        agent: finalResponse.agent,
-        responseLength: finalResponse.response.length,
-        latency: totalLatency,
-      },
-    });
-
-    res.end();
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    const errorDetails = error instanceof Error ? error.stack : undefined;
-
-    logger.error({ error, errorDetails }, "Error processing streaming chat message");
-
-    res.write(`data: ${JSON.stringify({ 
-      type: "error", 
-      error: errorMessage,
-      details: errorDetails 
-    })}\n\n`);
-    res.end();
-
-    chatSpan?.update({
-      level: "ERROR",
-      metadata: {
-        error: errorMessage,
-        errorDetails,
-      },
-    });
-
-    trace?.update({
-      metadata: { error: errorMessage },
-    });
-  } finally {
-    chatSpan?.end();
-  }
-});
+  },
+);
 
 app.post(
   "/api/chat",
@@ -848,140 +1050,232 @@ app.post(
   sessionValidationMiddleware,
   inputValidationMiddleware(5000, "message"),
   async (req, res) => {
-  const langfuse = getLangfuse();
-  const { message, sessionId = "default", language } = req.body;
-  const traceId = req.headers["x-langfuse-trace-id"] as string | undefined;
+    const langfuse = getLangfuse();
+    const { message, sessionId = "default", language } = req.body;
+    const traceId = req.headers["x-langfuse-trace-id"] as string | undefined;
 
-  const trace = traceId && langfuse
-    ? langfuse.trace({ id: traceId, name: "conversation-turn" })
-    : langfuse?.trace({
-        name: "conversation-turn",
-        metadata: { sessionId },
+    const trace =
+      traceId && langfuse
+        ? langfuse.trace({ id: traceId, name: "conversation-turn" })
+        : langfuse?.trace({
+            name: "conversation-turn",
+            metadata: { sessionId },
+          });
+
+    const chatSpan = trace?.span({
+      name: "chat-processing",
+      metadata: {
+        endpoint: "/api/chat",
+        sessionId,
+        messageLength: message?.length || 0,
+      },
+    });
+
+    const startTime = Date.now();
+
+    try {
+      if (!message || typeof message !== "string") {
+        chatSpan?.update({
+          level: "ERROR",
+          metadata: { error: "Message is required" },
+        });
+        if (trace) {
+          trace.update({ metadata: { error: "Message is required" } });
+        }
+        return res.status(400).json({ error: "Message is required" });
+      }
+
+      logger.info(
+        { message: message.substring(0, 100), sessionId, language },
+        "Processing chat message",
+      );
+
+      const orchestrator = await getOrchestrator(sessionId);
+
+      // Create adapter for Langfuse trace to match orchestrator interface
+      const traceAdapter = trace
+        ? {
+            span: (options: {
+              name: string;
+              metadata?: Record<string, unknown>;
+            }) => {
+              const span = trace.span(options);
+              return {
+                update: (opts?: { metadata?: Record<string, unknown> }) => {
+                  if (opts) span.update(opts);
+                },
+                end: (opts?: {
+                  output?: unknown;
+                  metadata?: Record<string, unknown>;
+                }) => {
+                  if (opts) span.end(opts);
+                },
+                span: (childOptions: {
+                  name: string;
+                  metadata?: Record<string, unknown>;
+                }) => {
+                  const childSpan = span.span(childOptions);
+                  return {
+                    update: (opts?: { metadata?: Record<string, unknown> }) => {
+                      if (opts) childSpan.update(opts);
+                    },
+                    end: (opts?: {
+                      output?: unknown;
+                      metadata?: Record<string, unknown>;
+                    }) => {
+                      if (opts) childSpan.end(opts);
+                    },
+                  };
+                },
+              };
+            },
+            generation: (options: {
+              name: string;
+              model?: string;
+              modelParameters?: Record<string, unknown>;
+              input?: Record<string, unknown>;
+            }) => {
+              const generation = trace.generation({
+                name: options.name,
+                model: options.model,
+                modelParameters: options.modelParameters as Record<
+                  string,
+                  string | number | boolean | string[] | null
+                >,
+                input: options.input,
+              });
+              return {
+                end: (opts?: { output?: unknown; usage?: unknown }) => {
+                  if (opts && opts.usage !== undefined) {
+                    generation.end({
+                      output: opts.output,
+                      usage: opts.usage,
+                    } as Parameters<typeof generation.end>[0]);
+                  } else if (opts) {
+                    generation.end({
+                      output: opts.output,
+                    } as Parameters<typeof generation.end>[0]);
+                  } else {
+                    generation.end();
+                  }
+                },
+              };
+            },
+          }
+        : undefined;
+
+      let response: OrchestratorResponse;
+      try {
+        response = await orchestrator.processMessage(
+          message,
+          language,
+          traceAdapter,
+        );
+        logger.debug(
+          { agent: response.agent, responseLength: response.response.length },
+          "Message processed successfully",
+        );
+      } catch (error) {
+        logger.error(
+          { error, message: message.substring(0, 100) },
+          "Error in orchestrator.processMessage",
+        );
+        throw error;
+      }
+
+      const totalLatency = Date.now() - startTime;
+
+      trace?.update({
+        metadata: {
+          agent: response.agent,
+          orderCreated: response.orderCreated,
+          orderId: response.orderId,
+          sourcesCount: response.sources?.length || 0,
+          status: "OK",
+        },
       });
 
-  const chatSpan = trace?.span({
-    name: "chat-processing",
-    metadata: {
-      endpoint: "/api/chat",
-      sessionId,
-      messageLength: message?.length || 0,
-    },
-  });
+      chatSpan?.end({
+        metadata: {
+          agent: response.agent,
+          responseLength: response.response.length,
+          latency: totalLatency,
+        },
+      });
 
-  const startTime = Date.now();
+      return res.json({
+        ...response,
+        sessionId,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      const errorDetails = error instanceof Error ? error.stack : undefined;
 
-  try {
-    if (!message || typeof message !== "string") {
+      logger.error({ error }, "Error processing chat message");
+
       chatSpan?.update({
         level: "ERROR",
-        metadata: { error: "Message is required" },
+        metadata: {
+          error: errorMessage,
+          errorDetails,
+        },
       });
-      trace?.update({ metadata: { error: "Message is required" } });
-      return res.status(400).json({ error: "Message is required" });
+
+      trace?.update({
+        metadata: { error: errorMessage },
+      });
+
+      return res.status(500).json({
+        error: "Failed to process message",
+        message: errorMessage,
+      });
+    } finally {
+      chatSpan?.end();
     }
-
-    logger.info({ message: message.substring(0, 100), sessionId, language }, "Processing chat message");
-    
-    const orchestrator = await getOrchestrator(sessionId);
-    
-    let response: OrchestratorResponse;
-    try {
-      response = await orchestrator.processMessage(message, language, trace || undefined);
-      logger.debug({ agent: response.agent, responseLength: response.response.length }, "Message processed successfully");
-    } catch (error) {
-      logger.error({ error, message: message.substring(0, 100) }, "Error in orchestrator.processMessage");
-      throw error;
-    }
-
-    const totalLatency = Date.now() - startTime;
-
-    trace?.update({
-      metadata: {
-        agent: response.agent,
-        orderCreated: response.orderCreated,
-        orderId: response.orderId,
-        sourcesCount: response.sources?.length || 0,
-        status: "OK",
-      },
-    });
-
-    chatSpan?.end({
-      metadata: {
-        agent: response.agent,
-        responseLength: response.response.length,
-        latency: totalLatency,
-      },
-    });
-
-    return res.json({
-      ...response,
-      sessionId,
-      timestamp: new Date().toISOString(),
-    });
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    const errorDetails = error instanceof Error ? error.stack : undefined;
-
-    logger.error({ error }, "Error processing chat message");
-
-    chatSpan?.update({
-      level: "ERROR",
-      metadata: {
-        error: errorMessage,
-        errorDetails,
-      },
-    });
-
-    trace?.update({
-      metadata: { error: errorMessage },
-    });
-
-    return res.status(500).json({
-      error: "Failed to process message",
-      message: errorMessage,
-    });
-  } finally {
-    chatSpan?.end();
-  }
-});
+  },
+);
 
 app.get(
   "/api/chat/history/:sessionId",
   sessionValidationMiddleware,
   async (req, res) => {
-  try {
-    const { sessionId } = req.params;
-    const orchestrator = await getOrchestrator(sessionId);
-    const history = orchestrator.getHistory();
+    try {
+      const { sessionId } = req.params;
+      const orchestrator = await getOrchestrator(sessionId);
+      const history = orchestrator.getHistory();
 
-    res.json({ history, sessionId });
-  } catch (error) {
-    logger.error({ error }, "Error getting chat history");
-    res.status(500).json({
-      error: "Failed to get chat history",
-      message: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+      res.json({ history, sessionId });
+    } catch (error) {
+      logger.error({ error }, "Error getting chat history");
+      res.status(500).json({
+        error: "Failed to get chat history",
+        message: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  },
+);
 
 app.delete(
   "/api/chat/history/:sessionId",
   sessionValidationMiddleware,
   async (req, res) => {
-  try {
-    const { sessionId } = req.params;
-    const orchestrator = await getOrchestrator(sessionId);
-    orchestrator.clearHistory();
+    try {
+      const { sessionId } = req.params;
+      const orchestrator = await getOrchestrator(sessionId);
+      orchestrator.clearHistory();
 
-    res.json({ success: true, sessionId });
-  } catch (error) {
-    logger.error({ error }, "Error clearing chat history");
-    res.status(500).json({
-      error: "Failed to clear chat history",
-      message: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+      res.json({ success: true, sessionId });
+    } catch (error) {
+      logger.error({ error }, "Error clearing chat history");
+      res.status(500).json({
+        error: "Failed to clear chat history",
+        message: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  },
+);
 
 app.get("/api/orders/:orderId", (req, res) => {
   try {

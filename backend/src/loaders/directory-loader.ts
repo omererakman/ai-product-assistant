@@ -1,28 +1,36 @@
 import { readdir, readFile } from "fs/promises";
 import { join, extname } from "path";
 import { logger } from "../logger.js";
-import { Product, productsToDocuments } from "./json-loader.js";
+import { Product } from "./json-loader.js";
 
-function parseTXTDocument(document: { pageContent: string; metadata?: Record<string, any> }): Product[] {
+function parseTXTDocument(document: {
+  pageContent: string;
+  metadata?: Record<string, unknown>;
+}): Product[] {
   const products: Product[] = [];
   const content = document.pageContent;
   const productBlocks = content.split(/\n\n+/);
-  
+
   for (const block of productBlocks) {
     if (!block.trim()) continue;
-    
-    const lines = block.split("\n").map(l => l.trim()).filter(l => l);
+
+    const lines = block
+      .split("\n")
+      .map((l) => l.trim())
+      .filter((l) => l);
     if (lines.length === 0) continue;
-    
-    const product: Partial<Product> & { specifications?: Record<string, string> } = {
+
+    const product: Partial<Product> & {
+      specifications?: Record<string, string>;
+    } = {
       specifications: {},
     };
-    
+
     let inSpecs = false;
-    
+
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
-      
+
       if (line.startsWith("PROD-")) {
         const match = line.match(/^PROD-(\d+)\s*-\s*(.+)$/);
         if (match) {
@@ -31,13 +39,13 @@ function parseTXTDocument(document: { pageContent: string; metadata?: Record<str
         }
         continue;
       }
-      
+
       if (line.includes(":")) {
         const colonIndex = line.indexOf(":");
         const key = line.substring(0, colonIndex).trim();
         const value = line.substring(colonIndex + 1).trim();
         const keyLower = key.toLowerCase();
-        
+
         if (keyLower === "category") {
           product.category = value;
         } else if (keyLower === "sub category") {
@@ -72,7 +80,7 @@ function parseTXTDocument(document: { pageContent: string; metadata?: Record<str
         }
       }
     }
-    
+
     if (
       product.product_id &&
       product.name &&
@@ -89,32 +97,37 @@ function parseTXTDocument(document: { pageContent: string; metadata?: Record<str
         price: product.price,
         category: product.category,
         stock_status: product.stock_status,
-        specifications: Object.keys(product.specifications || {}).length > 0
-          ? Object.fromEntries(
-              Object.entries(product.specifications || {}).filter(
-                ([k]) => k !== "sub_category"
+        specifications:
+          Object.keys(product.specifications || {}).length > 0
+            ? Object.fromEntries(
+                Object.entries(product.specifications || {}).filter(
+                  ([k]) => k !== "sub_category",
+                ),
               )
-            )
-          : undefined,
+            : undefined,
       };
-      
+
       if (subCategory) {
-        (finalProduct as any).sub_category = subCategory;
+        (finalProduct as Product & { sub_category: string }).sub_category =
+          subCategory;
       }
-      
+
       products.push(finalProduct);
     } else {
       logger.warn(
         { product_id: product.product_id },
-        "Skipping incomplete product from TXT file"
+        "Skipping incomplete product from TXT file",
       );
     }
   }
-  
+
   return products;
 }
 
-function parseJSONDocument(document: { pageContent: string; metadata?: Record<string, any> }): Product[] {
+function parseJSONDocument(document: {
+  pageContent: string;
+  metadata?: Record<string, unknown>;
+}): Product[] {
   try {
     const products: Product[] = JSON.parse(document.pageContent);
     return products;
@@ -124,30 +137,35 @@ function parseJSONDocument(document: { pageContent: string; metadata?: Record<st
   }
 }
 
-export async function loadProductsFromDirectory(directoryPath: string): Promise<Product[]> {
+export async function loadProductsFromDirectory(
+  directoryPath: string,
+): Promise<Product[]> {
   logger.info({ directoryPath }, "Loading products from directory");
-  
+
   try {
     const fullPath = join(process.cwd(), directoryPath);
     const allProducts: Product[] = [];
     const files = await readdir(fullPath);
     const supportedFiles = files.filter(
-      (file) => file.endsWith(".json") || file.endsWith(".txt")
+      (file) => file.endsWith(".json") || file.endsWith(".txt"),
     );
-    
+
     logger.debug({ fileCount: supportedFiles.length }, "Found supported files");
-    
+
     for (const file of supportedFiles) {
       const filePath = join(fullPath, file);
       const ext = extname(file).toLowerCase();
-      
+
       try {
         const content = await readFile(filePath, "utf-8");
-        const doc: { pageContent: string; metadata: Record<string, any> } = {
+        const doc: {
+          pageContent: string;
+          metadata: Record<string, unknown>;
+        } = {
           pageContent: content,
           metadata: { source: filePath },
         };
-        
+
         if (ext === ".json") {
           const products = parseJSONDocument(doc);
           allProducts.push(...products);
@@ -160,21 +178,24 @@ export async function loadProductsFromDirectory(directoryPath: string): Promise<
       } catch (error) {
         logger.error(
           { error, file },
-          "Failed to parse file, continuing with other files"
+          "Failed to parse file, continuing with other files",
         );
       }
     }
-    
+
     logger.info(
       { count: allProducts.length, filesProcessed: supportedFiles.length },
-      "All products loaded from directory"
+      "All products loaded from directory",
     );
-    
+
     return allProducts;
   } catch (error) {
-    logger.error({ error, directoryPath }, "Failed to load products from directory");
+    logger.error(
+      { error, directoryPath },
+      "Failed to load products from directory",
+    );
     throw new Error(
-      `Failed to load products from directory: ${error instanceof Error ? error.message : String(error)}`
+      `Failed to load products from directory: ${error instanceof Error ? error.message : String(error)}`,
     );
   }
 }

@@ -11,7 +11,10 @@ import { ragPrompt, createRAGPromptWithHistory } from "../prompts/rag.js";
 import { logger } from "../logger.js";
 import { ProductContextManager } from "../utils/product-context.js";
 import { ProductListItem } from "../orchestrator/index.js";
-import { createSecureParserWithRetryAndFixing, DEFAULT_CONFIG } from "../security/guardrails.js";
+import {
+  createSecureParserWithRetryAndFixing,
+  DEFAULT_CONFIG,
+} from "../security/guardrails.js";
 
 export interface AgentResponse {
   answer: string;
@@ -46,15 +49,21 @@ export function createRAGChain(
   language?: string,
 ): RunnableSequence {
   const prompt = useHistory ? createRAGPromptWithHistory(language) : ragPrompt;
-  const secureParser = createSecureParserWithRetryAndFixing(llm, DEFAULT_CONFIG);
+  const secureParser = createSecureParserWithRetryAndFixing(
+    llm,
+    DEFAULT_CONFIG,
+  );
   const baseChain = prompt.pipe(llm);
   const guardedChain = prompt.pipe(llm).pipe(secureParser);
 
   return RunnableSequence.from([
     RunnablePassthrough.assign({
-      documents: async (input: { question: string; chat_history?: Array<[string, string]> }) => {
+      documents: async (input: {
+        question: string;
+        chat_history?: Array<[string, string]>;
+      }) => {
         const retrievalStartTime = Date.now();
-        
+
         const docs = await retriever.invoke(input.question);
         const searchTimeMs = Date.now() - retrievalStartTime;
 
@@ -66,7 +75,7 @@ export function createRAGChain(
             documentCount: docs.length,
             productCount: productList.length,
             searchTimeMs,
-            agent: agentName
+            agent: agentName,
           },
           "Documents retrieved",
         );
@@ -74,14 +83,20 @@ export function createRAGChain(
           docs,
           searchTimeMs,
           productList,
-          chat_history: input.chat_history as Array<[string, string]> | undefined
+          chat_history: input.chat_history as
+            | Array<[string, string]>
+            | undefined,
         };
       },
     }),
     RunnablePassthrough.assign({
       answer: async (input: {
         question: string;
-        documents: { docs: Document[]; searchTimeMs: number; productList: ProductListItem[] };
+        documents: {
+          docs: Document[];
+          searchTimeMs: number;
+          productList: ProductListItem[];
+        };
         chat_history?: Array<[string, string]>;
       }) => {
         const llmStartTime = Date.now();
@@ -104,7 +119,9 @@ export function createRAGChain(
         if (useHistory && input.chat_history && input.chat_history.length > 0) {
           messages = input.chat_history.map((tuple) => {
             const [role, content] = tuple;
-            return role === "human" ? new HumanMessage(content) : new AIMessage(content);
+            return role === "human"
+              ? new HumanMessage(content)
+              : new AIMessage(content);
           });
           logger.info(
             {
@@ -136,21 +153,40 @@ export function createRAGChain(
         );
 
         let response: string;
-        let tokenUsage: { promptTokens: number; completionTokens: number; totalTokens: number } | undefined;
-        
+        let tokenUsage:
+          | {
+              promptTokens: number;
+              completionTokens: number;
+              totalTokens: number;
+            }
+          | undefined;
+
         try {
           const rawResponsePromise = baseChain.invoke(chainInput);
           const guardedResponsePromise = guardedChain.invoke(chainInput);
-          const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error("LLM call timeout after 60 seconds")), 60000)
+          const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(
+              () => reject(new Error("LLM call timeout after 60 seconds")),
+              60000,
+            ),
           );
-          
+
           const [rawResponse, parsedResponse] = await Promise.all([
             Promise.race([rawResponsePromise, timeoutPromise]),
-            Promise.race([guardedResponsePromise, timeoutPromise])
+            Promise.race([guardedResponsePromise, timeoutPromise]),
           ]);
-          
-          const responseMetadata = (rawResponse as { response_metadata?: { usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number } } }).response_metadata;
+
+          const responseMetadata = (
+            rawResponse as {
+              response_metadata?: {
+                usage?: {
+                  prompt_tokens?: number;
+                  completion_tokens?: number;
+                  total_tokens?: number;
+                };
+              };
+            }
+          ).response_metadata;
           const usage = responseMetadata?.usage;
           tokenUsage = usage
             ? {
@@ -158,16 +194,23 @@ export function createRAGChain(
                 completionTokens: usage.completion_tokens ?? 0,
                 totalTokens: usage.total_tokens ?? 0,
               }
-                : undefined;
-          
+            : undefined;
+
           response = parsedResponse as string;
-          
+
           logger.info(
             { agent: agentName, responseLength: response?.length || 0 },
             "LLM chain invocation completed with LangChain guardrails",
           );
         } catch (error) {
-          logger.error({ error, agent: agentName, question: input.question.substring(0, 100) }, "Error invoking LLM chain");
+          logger.error(
+            {
+              error,
+              agent: agentName,
+              question: input.question.substring(0, 100),
+            },
+            "Error invoking LLM chain",
+          );
           throw error;
         }
 
@@ -181,7 +224,11 @@ export function createRAGChain(
     RunnableLambda.from(
       (input: {
         question: string;
-        documents: { docs: Document[]; searchTimeMs: number; productList: ProductListItem[] };
+        documents: {
+          docs: Document[];
+          searchTimeMs: number;
+          productList: ProductListItem[];
+        };
         answer: {
           answer: string;
           tokenUsage?: {
@@ -203,7 +250,7 @@ export function createRAGChain(
 
             const finalSourceId = sourceId || source || "unknown";
             return {
-              id: doc.metadata.id as string || `chunk-${index}`,
+              id: (doc.metadata.id as string) || `chunk-${index}`,
               text: doc.pageContent,
               sourceId: finalSourceId as string,
               metadata: metadataWithoutSource,

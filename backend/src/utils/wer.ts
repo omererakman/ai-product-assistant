@@ -21,10 +21,7 @@ function tokenize(text: string): string[] {
   return normalized.split(" ").filter((word) => word.length > 0);
 }
 
-export function calculateWER(
-  reference: string,
-  hypothesis: string
-): WERResult {
+export function calculateWER(reference: string, hypothesis: string): WERResult {
   const refWords = tokenize(reference);
   const hypWords = tokenize(hypothesis);
 
@@ -64,9 +61,7 @@ export function calculateWER(
     .map(() => Array(m + 1).fill(0));
 
   // Track operations for detailed breakdown
-  const operations: Array<Array<"match" | "sub" | "del" | "ins">> = Array(
-    n + 1
-  )
+  const operations: Array<Array<"match" | "sub" | "del" | "ins">> = Array(n + 1)
     .fill(null)
     .map(() => Array(m + 1).fill("match"));
 
@@ -171,7 +166,7 @@ export function formatAccuracy(result: WERResult): string {
  */
 export function isWERAcceptable(
   result: WERResult,
-  threshold: number = 0.15
+  threshold: number = 0.15,
 ): boolean {
   return result.wer <= threshold;
 }

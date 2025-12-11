@@ -1,4 +1,4 @@
-import Meyda, { MeydaAudioFeature } from 'meyda';
+import Meyda, { MeydaAudioFeature } from "meyda";
 
 export interface SpeechDetectionResult {
   isSpeech: boolean;
@@ -13,18 +13,19 @@ export interface SpeechDetectionResult {
 }
 
 export interface SpeechFrequencyBands {
-  lowNoise: { start: number; end: number };      // 0-200 Hz
-  fundamental: { start: number; end: number };  // 85-255 Hz
-  formants: { start: number; end: number };     // 300-3400 Hz
-  consonants: { start: number; end: number };   // 3400-8000 Hz
+  lowNoise: { start: number; end: number }; // 0-200 Hz
+  fundamental: { start: number; end: number }; // 85-255 Hz
+  formants: { start: number; end: number }; // 300-3400 Hz
+  consonants: { start: number; end: number }; // 3400-8000 Hz
 }
 
-const SPEECH_BANDS: SpeechFrequencyBands = {
-  lowNoise: { start: 0, end: 200 },
-  fundamental: { start: 85, end: 255 },
-  formants: { start: 300, end: 3400 },
-  consonants: { start: 3400, end: 8000 },
-};
+// SPEECH_BANDS kept for potential future use
+// const SPEECH_BANDS: SpeechFrequencyBands = {
+//   lowNoise: { start: 0, end: 200 },
+//   fundamental: { start: 85, end: 255 },
+//   formants: { start: 300, end: 3400 },
+//   consonants: { start: 3400, end: 8000 },
+// };
 
 export class SpeechDetector {
   private extractor: ReturnType<typeof Meyda.createMeydaAnalyzer> | null = null;
@@ -35,7 +36,11 @@ export class SpeechDetector {
   private frameCount = 0;
   private lastResult: SpeechDetectionResult | null = null;
 
-  constructor(audioContext: AudioContext, analyser: AnalyserNode, source: AudioNode) {
+  constructor(
+    audioContext: AudioContext,
+    analyser: AnalyserNode,
+    source: AudioNode,
+  ) {
     this.audioContext = audioContext;
     this.analyser = analyser;
     this.sampleRate = audioContext.sampleRate;
@@ -47,11 +52,11 @@ export class SpeechDetector {
         source: source,
         bufferSize: 2048, // Good balance of resolution and performance
         featureExtractors: [
-          'spectralCentroid',
-          'spectralRolloff',
-          'mfcc', // 13 coefficients
-          'zcr',
-          'energy',
+          "spectralCentroid",
+          "spectralRolloff",
+          "mfcc", // 13 coefficients
+          "zcr",
+          "energy",
           // Removed 'spectralFlux' - causes error in Meyda
         ],
         callback: () => {
@@ -59,7 +64,7 @@ export class SpeechDetector {
         },
       });
     } catch (error) {
-      console.error('Failed to initialize Meyda:', error);
+      console.error("Failed to initialize Meyda:", error);
     }
   }
 
@@ -88,11 +93,11 @@ export class SpeechDetector {
 
     // Get features from Meyda
     const features = this.extractor.get([
-      'spectralCentroid',
-      'spectralRolloff',
-      'mfcc',
-      'zcr',
-      'energy',
+      "spectralCentroid",
+      "spectralRolloff",
+      "mfcc",
+      "zcr",
+      "energy",
       // Removed 'spectralFlux' - causes error in Meyda
     ] as MeydaAudioFeature[]);
 
@@ -118,11 +123,11 @@ export class SpeechDetector {
     // Adjusted to be more sensitive to actual speech while still filtering noise
     const weights = {
       centroid: 0.15,
-      rolloff: 0.10,
-      mfcc: 0.25,      // MFCCs are strong speech indicators
-      formant: 0.30,   // Formants are most important for speech
-      zcr: 0.10,
-      energy: 0.10,    // Energy can help detect speech presence
+      rolloff: 0.1,
+      mfcc: 0.25, // MFCCs are strong speech indicators
+      formant: 0.3, // Formants are most important for speech
+      zcr: 0.1,
+      energy: 0.1, // Energy can help detect speech presence
     };
 
     const confidence =
@@ -134,7 +139,7 @@ export class SpeechDetector {
       (energy > 0.01 ? 0.1 : 0) * weights.energy; // Lowered energy threshold to detect speech better
 
     // Balanced threshold - lowered to detect speech better
-    const isSpeech = confidence >= 0.50;
+    const isSpeech = confidence >= 0.5;
 
     const result: SpeechDetectionResult = {
       isSpeech,
@@ -194,7 +199,7 @@ export class SpeechDetector {
     const energyScore = Math.min(1, c0 / 8); // Lowered from 10 to 8 - more sensitive
     const formantScore = Math.min(1, (c1 + c2 + c3) / 25); // Lowered from 30 to 25 - more sensitive
 
-    return Math.min(1, (energyScore * 0.5 + formantScore * 0.5));
+    return Math.min(1, energyScore * 0.5 + formantScore * 0.5);
   }
 
   private detectFormantsFromMFCC(mfcc: number[]): number {
