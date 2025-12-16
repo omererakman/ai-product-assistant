@@ -111,6 +111,11 @@ export function rateLimitMiddleware(
   };
 }
 
+/**
+ * Validates and sanitizes user input at the request level.
+ * This is the primary layer for detecting prompt injection attacks
+ * on raw user input before it's incorporated into prompt templates.
+ */
 export function inputValidationMiddleware(
   maxLength: number = DEFAULT_CONFIG.maxInputLength,
   fieldName: string = "message",
@@ -148,7 +153,8 @@ export function inputValidationMiddleware(
       return;
     }
 
-    // Check for prompt injection
+    // Check for prompt injection on USER INPUT ONLY
+    // This validates the raw user input before it's inserted into prompt templates
     const injectionCheck = detectPromptInjection(input);
     if (injectionCheck.isInjection) {
       logger.warn(
@@ -157,7 +163,7 @@ export function inputValidationMiddleware(
           detectedPatterns: injectionCheck.detectedPatterns,
           clientId: getClientId(req),
         },
-        "Prompt injection detected in request",
+        "Prompt injection detected in user input",
       );
       // Log but don't block - let guardrails handle it
       // In production, you might want to block here

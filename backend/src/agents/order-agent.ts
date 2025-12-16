@@ -345,15 +345,14 @@ export class OrderAgent {
       .map((msg) => `${msg.role}: ${msg.content}`)
       .join("\n");
 
-    const languageInstruction =
+    // If language is set via UI, use it. Otherwise, detect from user's message.
+    const languageRule =
       language && language in LANGUAGE_NAMES
-        ? `\n\nLANGUAGE SETTING: The user's language is set to ${LANGUAGE_NAMES[language as LanguageCode]}. Respond ONLY in ${LANGUAGE_NAMES[language as LanguageCode]}.`
-        : "";
-
-    const messages: Array<[string, string]> = [
-      [
-        "system",
-        `CRITICAL LANGUAGE RULE - HIGHEST PRIORITY (READ THIS FIRST):
+        ? `CRITICAL LANGUAGE RULE - HIGHEST PRIORITY (READ THIS FIRST):
+The user's language is set to ${LANGUAGE_NAMES[language as LanguageCode]}. You MUST respond ONLY in ${LANGUAGE_NAMES[language as LanguageCode]}.
+- Always respond in ${LANGUAGE_NAMES[language as LanguageCode]}, regardless of the language used in the user's message
+- Maintain consistency: use ${LANGUAGE_NAMES[language as LanguageCode]} throughout the conversation`
+        : `CRITICAL LANGUAGE RULE - HIGHEST PRIORITY (READ THIS FIRST):
 You MUST respond in the EXACT same language that the user uses in their CURRENT question.
 - Analyze the user's CURRENT question to detect its language
 - Respond ONLY in that detected language
@@ -361,21 +360,17 @@ You MUST respond in the EXACT same language that the user uses in their CURRENT 
 - If the user writes in Spanish, respond ONLY in Spanish
 - If the user writes in French, respond ONLY in French
 - The user's CURRENT question language takes ABSOLUTE priority - ignore conversation history language if it differs
-- DO NOT continue in a previous language if the user switches languages${languageInstruction}
+- DO NOT continue in a previous language if the user switches languages`;
+
+    const messages: Array<[string, string]> = [
+      [
+        "system",
+        `${languageRule}
 
 You are an order processing assistant. Your job is to:
 1. Search for products when users ask about them
 2. Collect invoice information before creating orders
 3. Create orders when users confirm they want to purchase AND have provided all required invoice information
-
-REQUIRED INVOICE INFORMATION (must be collected before order creation):
-- Analyze the user's CURRENT question to detect its language
-- Respond ONLY in that detected language
-- If the user writes in English, respond ONLY in English
-- If the user writes in Spanish, respond ONLY in Spanish
-- If the user writes in French, respond ONLY in French
-- The user's CURRENT question language takes ABSOLUTE priority - ignore conversation history language if it differs
-- DO NOT continue in a previous language if the user switches languages
 
 REQUIRED INFORMATION (must be collected before order creation):
 - Customer name (REQUIRED): The name of the customer placing the order

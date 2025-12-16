@@ -18,8 +18,8 @@ export interface GuardrailConfig {
 }
 
 export const DEFAULT_CONFIG: GuardrailConfig = {
-  maxInputLength: 5000,
-  maxOutputLength: 10000,
+  maxInputLength: 50000,
+  maxOutputLength: 50000,
   enablePromptInjectionDetection: true,
   enableContentModeration: true,
   enablePIIDetection: true,
@@ -39,6 +39,12 @@ export const DEFAULT_CONFIG: GuardrailConfig = {
   ],
 };
 
+/**
+ * Detects potential prompt injection attempts in user input.
+ * IMPORTANT: This should only be called on raw user input, NOT on constructed
+ * prompt templates that include system instructions, as those will trigger
+ * false positives.
+ */
 export function detectPromptInjection(
   input: string,
   config: GuardrailConfig = DEFAULT_CONFIG,
@@ -74,6 +80,11 @@ export function detectPromptInjection(
   };
 }
 
+/**
+ * Sanitizes user input by removing potentially harmful content.
+ * IMPORTANT: This should only be called on raw user input, NOT on constructed
+ * prompt templates, as it will detect false positives in system instructions.
+ */
 export function sanitizeInput(
   input: string,
   config: GuardrailConfig = DEFAULT_CONFIG,

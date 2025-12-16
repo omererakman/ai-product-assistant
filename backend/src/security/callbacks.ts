@@ -1,6 +1,5 @@
 import { BaseCallbackHandler } from "@langchain/core/callbacks/base";
 import {
-  sanitizeInput,
   validateOutput,
   moderateContent,
   GuardrailConfig,
@@ -17,20 +16,13 @@ export class GuardrailsCallbackHandler extends BaseCallbackHandler {
     this.config = config;
   }
 
-  async handleLLMStart(_llm: unknown, prompts: string[]): Promise<void> {
-    for (const prompt of prompts) {
-      const sanitization = sanitizeInput(prompt, this.config);
-      if (sanitization.warnings.length > 0) {
-        logger.warn(
-          {
-            warnings: sanitization.warnings,
-            callback: this.name,
-            promptPreview: prompt.substring(0, 100),
-          },
-          "Guardrails callback: Input sanitization warnings",
-        );
-      }
-    }
+  async handleLLMStart(_llm: unknown, _prompts: string[]): Promise<void> {
+    // Skip validation in handleLLMStart - prompts here are the final templates
+    // that include system instructions. User input validation should happen
+    // earlier in the middleware layer before being inserted into templates.
+    // Validating the final prompt would cause false positives on legitimate
+    // system instructions.
+    return;
   }
 
   async handleLLMEnd(output: unknown): Promise<void> {
