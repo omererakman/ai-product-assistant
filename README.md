@@ -1,12 +1,12 @@
 # AI Product Assistant
 
-A production-ready AI-powered e-commerce chatbot that combines RAG (Retrieval-Augmented Generation) for product information retrieval with autonomous order processing using function calling. Built with LangChain, TypeScript, React, and modern AI orchestration patterns.
+AI-powered e-commerce chatbot that combines RAG (Retrieval-Augmented Generation) for product information retrieval with autonomous order processing using function calling. Built with LangChain, TypeScript, React, and modern AI orchestration patterns.
 
 ## ✅ Features
 
 > For detailed architectural information and implementation details, see [Architecture Documentation](./docs/ARCHITECTURE.md).
 
-| Feature | Implementation | Status |
+| Feature | Implementation |  |
 |--------|----------------|--------|
 | **Dual-Agent System** | RAG Agent (product queries) + Order Agent (order processing) with autonomous handoff | ✅ |
 | **Vector Store** | ChromaDB with ≥90 products, OpenAI embeddings (text-embedding-3-small), hybrid retrieval | ✅ |
