@@ -114,6 +114,8 @@ Run both backend and frontend concurrently:
 npm run dev
 ```
 
+> **Note:** If `npm run dev` doesn't work (especially on Windows), run backend and frontend separately using `npm run dev:backend` and `npm run dev:frontend` in different terminals.
+
 This starts:
 - **Backend API server** on `http://localhost:3001`
 - **Frontend development server** on `http://localhost:5173`
@@ -200,6 +202,17 @@ npm run test:e2e
 ```
 
 ## 🚨 Troubleshooting
+
+**`npm run dev` Not Working (especially on Windows):**
+- If `npm run dev` fails or doesn't start both servers, try running backend and frontend separately in different terminal windows:
+  ```bash
+  # Terminal 1 - Backend
+  npm run dev:backend
+  
+  # Terminal 2 - Frontend
+  npm run dev:frontend
+  ```
+- This is a common issue on Windows due to how `concurrently` handles process management
 
 **ChromaDB Connection Issues:**
 - Verify ChromaDB is running: `curl http://localhost:8000/api/v2/heartbeat`

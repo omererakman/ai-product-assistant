@@ -9,6 +9,7 @@ import type { TTSVoice } from "./components/VoiceSettings";
 import type { LanguageCode } from "@shared/constants/languages";
 import { useContinuousVoiceConversation } from "./hooks/useContinuousVoiceConversation";
 import { useStreamingChat } from "./hooks/useStreamingChat";
+import { API_URL } from "./utils/config";
 
 interface Message {
   role: "user" | "assistant";
@@ -22,8 +23,6 @@ interface Message {
     metadata: Record<string, unknown>;
   }>;
 }
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 function App() {
   const [messages, setMessages] = useState<Message[]>([]);

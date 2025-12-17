@@ -3,8 +3,7 @@ import { useAudioRecorder } from "./useAudioRecorder";
 import { useWhisperTranscription } from "./useWhisperTranscription";
 import { useNaturalTTS } from "./useNaturalTTS";
 import { useSharedAudioContext } from "./useSharedAudioContext";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+import { API_URL } from "../utils/config";
 
 interface UseContinuousVoiceConversationOptions {
   sessionId: string;

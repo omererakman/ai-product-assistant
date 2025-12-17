@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { useAudioPlaybackManager } from "./useAudioPlaybackManager";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+import { API_URL } from "../utils/config";
 
 interface UseNaturalTTSOptions {
   enabled?: boolean; // Enable OpenAI TTS (requires backend endpoint)

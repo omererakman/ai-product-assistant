@@ -1,6 +1,5 @@
 import { useState, useCallback, useRef } from "react";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+import { API_URL } from "../utils/config";
 
 export interface StreamingChatChunk {
   type: "token" | "metadata" | "error" | "done";
