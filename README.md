@@ -44,6 +44,41 @@ AI-powered e-commerce chatbot that combines RAG (Retrieval-Augmented Generation)
 | **Git Hooks (Husky)** | Pre-commit hooks (lint, format check, build, .env file protection) and pre-push hooks (tests) | ✅ |
 | **Documentation** | Comprehensive README and architecture documentation | ✅ |
 
+## 📸 Screenshots
+
+> Click on any image to view it in full size.
+
+<table>
+<tr>
+<td align="center" width="50%">
+  <strong>Voice Conversation</strong><br>
+  <a href="./docs/Voice_Conversation.png" target="_blank">
+    <img src="./docs/Voice_Conversation.png" alt="Voice Conversation" width="400" style="cursor: pointer;" />
+  </a>
+</td>
+<td align="center" width="50%">
+  <strong>Text Conversation</strong><br>
+  <a href="./docs/Text_Conversation.png" target="_blank">
+    <img src="./docs/Text_Conversation.png" alt="Text Conversation" width="400" style="cursor: pointer;" />
+  </a>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%">
+  <strong>Orders</strong><br>
+  <a href="./docs/Orders.png" target="_blank">
+    <img src="./docs/Orders.png" alt="Orders" width="400" style="cursor: pointer;" />
+  </a>
+</td>
+<td align="center" width="50%">
+  <strong>Settings</strong><br>
+  <a href="./docs/Settings.png" target="_blank">
+    <img src="./docs/Settings.png" alt="Settings" width="400" style="cursor: pointer;" />
+  </a>
+</td>
+</tr>
+</table>
+
 ## 📋 Prerequisites
 
 - **Node.js** 22+ (check with `node --version`)
